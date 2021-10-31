@@ -1,0 +1,5 @@
+name: Archangel's Bow
+version: '${project.version}'
+main: com.tonbei.archangelsbow.ArchangelsBow
+api-version: 1.17
+authors: [ tonbei10 ]
