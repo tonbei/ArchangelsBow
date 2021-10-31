@@ -9,7 +9,7 @@
     <version>1.0.0</version>
     <packaging>jar</packaging>
 
-    <name>Archangel's Bow</name>
+    <name>ArchangelsBow</name>
 
     <properties>
         <java.version>1.8</java.version>
