@@ -1,5 +1,6 @@
 package com.tonbei.archangelsbow;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Arrow;
@@ -11,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,11 +24,11 @@ import java.util.logging.Logger;
 
 public final class ArchangelsBow extends JavaPlugin implements Listener {
 
-    public static boolean isDebug = true;
-    private static Logger logger = null;
+    public static final boolean isDebug = true;
+    private static Logger logger;
 
     private boolean isPaperMC = false;
-    private Method isTicking = null;
+    private Method isTicking;
 
     Map<UUID, TickArrow> TickArrows = new HashMap<>();
 
@@ -45,16 +47,16 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
         if(isDebug) logger.log(Level.INFO, "Server Type : " + (isPaperMC ? "PaperMC" : "Not PaperMC"));
 
-        new BukkitRunnable(){
+        new BukkitRunnable() {
             @Override
             public void run() {
-                for(TickArrow ta : TickArrows.values()){
+                for(TickArrow ta : TickArrows.values()) {
                     boolean defaultCheck = true;
                     Arrow arrow = ta.getArrow();
 
-                    if(isPaperMC){
+                    if(isPaperMC) {
                         try {
-                            if((boolean) isTicking.invoke(arrow)){
+                            if((boolean) isTicking.invoke(arrow)) {
                                 ta.tick();
                             }
                             defaultCheck = false;
@@ -62,7 +64,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
                             e.printStackTrace();
                         }
                     }
-                    if(defaultCheck){
+                    if(defaultCheck) {
                         Location lo = arrow.getLocation();
                         World wo = arrow.getWorld();
 
@@ -82,14 +84,16 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onShootBow(EntityShootBowEvent e) {
-        if(e.getEntity() instanceof Player){
-            if(e.getProjectile() instanceof Arrow){
-                //TickArrows.put();
+        if(e.getEntity() instanceof Player) {
+            if(e.getProjectile() instanceof Arrow) {
+                Arrow arrow = (Arrow) e.getProjectile();
+                TickArrows.put(arrow.getUniqueId(), new HomingArrow(arrow));
             }
         }
     }
 
-    public static Logger getPluginLogger(){
-        return logger;
+    @NotNull
+    public static Logger getPluginLogger() {
+        return logger != null ? logger : Bukkit.getLogger();
     }
 }

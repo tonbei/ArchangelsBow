@@ -1,16 +1,18 @@
 package com.tonbei.archangelsbow;
 
 import org.bukkit.entity.Arrow;
+import org.jetbrains.annotations.NotNull;
 
 public abstract class TickArrow {
 
     private final Arrow arrow;
 
-    public TickArrow(Arrow _arrow){
+    public TickArrow(@NotNull Arrow _arrow) {
         arrow = _arrow;
     }
 
-    public Arrow getArrow(){
+    @NotNull
+    public Arrow getArrow() {
         return arrow;
     }
 
