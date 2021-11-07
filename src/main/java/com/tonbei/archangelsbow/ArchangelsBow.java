@@ -17,6 +17,7 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -50,7 +51,14 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (TickArrow ta : TickArrows.values()) {
+                for (Iterator<Map.Entry<UUID, TickArrow>> iterator = TickArrows.entrySet().iterator(); iterator.hasNext();) {
+                    TickArrow ta = iterator.next().getValue();
+
+                    if (!ta.isActive()) {
+                        iterator.remove();
+                        continue;
+                    }
+
                     boolean defaultCheck = true;
                     Arrow arrow = ta.getArrow();
 
