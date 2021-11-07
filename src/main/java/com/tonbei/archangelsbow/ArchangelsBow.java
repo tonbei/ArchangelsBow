@@ -36,7 +36,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
     public void onEnable() {
         // Plugin startup logic
         this.getServer().getPluginManager().registerEvents(this, this);
-        if(logger == null) logger = this.getLogger();
+        if (logger == null) logger = this.getLogger();
 
         try {
             isTicking = Entity.class.getMethod("isTicking");
@@ -45,18 +45,18 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
             isPaperMC = false;
         }
 
-        if(isDebug) logger.log(Level.INFO, "Server Type : " + (isPaperMC ? "PaperMC" : "Not PaperMC"));
+        if (isDebug) logger.log(Level.INFO, "Server Type : " + (isPaperMC ? "PaperMC" : "Not PaperMC"));
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                for(TickArrow ta : TickArrows.values()) {
+                for (TickArrow ta : TickArrows.values()) {
                     boolean defaultCheck = true;
                     Arrow arrow = ta.getArrow();
 
-                    if(isPaperMC) {
+                    if (isPaperMC) {
                         try {
-                            if((boolean) isTicking.invoke(arrow)) {
+                            if ((boolean) isTicking.invoke(arrow)) {
                                 ta.tick();
                             }
                             defaultCheck = false;
@@ -64,12 +64,12 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
                             e.printStackTrace();
                         }
                     }
-                    if(defaultCheck) {
+                    if (defaultCheck) {
                         Location lo = arrow.getLocation();
                         World wo = arrow.getWorld();
 
-                        if(lo.isWorldLoaded() && wo.isChunkLoaded((int)Math.round(lo.getX()), (int)Math.round(lo.getZ())))
-                            if(wo.getChunkAt(lo).isEntitiesLoaded())
+                        if (lo.isWorldLoaded() && wo.isChunkLoaded((int)Math.round(lo.getX()), (int)Math.round(lo.getZ())))
+                            if (wo.getChunkAt(lo).isEntitiesLoaded())
                                 ta.tick();
                     }
                 }
@@ -84,8 +84,8 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onShootBow(EntityShootBowEvent e) {
-        if(e.getEntity() instanceof Player) {
-            if(e.getProjectile() instanceof Arrow) {
+        if (e.getEntity() instanceof Player) {
+            if (e.getProjectile() instanceof Arrow) {
                 Arrow arrow = (Arrow) e.getProjectile();
                 TickArrows.put(arrow.getUniqueId(), new HomingArrow(arrow));
             }

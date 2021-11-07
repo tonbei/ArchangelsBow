@@ -17,4 +17,6 @@ public abstract class TickArrow {
     }
 
     public abstract void tick();
+
+    public abstract boolean isActive();
 }
