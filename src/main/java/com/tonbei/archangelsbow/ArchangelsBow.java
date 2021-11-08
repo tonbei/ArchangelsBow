@@ -1,6 +1,5 @@
 package com.tonbei.archangelsbow;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Arrow;
@@ -12,7 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -20,24 +18,20 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     public static final boolean isDebug = true;
-    private static Logger logger;
 
     private boolean isPaperMC = false;
     private Method isTicking;
 
-    Map<UUID, TickArrow> TickArrows = new HashMap<>();
+    private static final Map<UUID, TickArrow> TickArrows = new HashMap<>();
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
         this.getServer().getPluginManager().registerEvents(this, this);
-        if (logger == null) logger = this.getLogger();
+        Log.setLogger(this.getLogger());
 
         try {
             isTicking = Entity.class.getMethod("isTicking");
@@ -46,12 +40,14 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
             isPaperMC = false;
         }
 
-        if (isDebug) logger.log(Level.INFO, "Server Type : " + (isPaperMC ? "PaperMC" : "Not PaperMC"));
+        if (isDebug) Log.info("Server Type : " + (isPaperMC ? "PaperMC" : "Not PaperMC"));
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (Iterator<Map.Entry<UUID, TickArrow>> iterator = TickArrows.entrySet().iterator(); iterator.hasNext();) {
+                Iterator<Map.Entry<UUID, TickArrow>> iterator = TickArrows.entrySet().iterator();
+
+                while (iterator.hasNext()) {
                     TickArrow ta = iterator.next().getValue();
 
                     if (!ta.isActive()) {
@@ -87,7 +83,13 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+
+    }
+
+    public static void register(TickArrow arrow) {
+        if (arrow == null) return;
+
+        TickArrows.put(arrow.getArrow().getUniqueId(), arrow);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -95,13 +97,8 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         if (e.getEntity() instanceof Player) {
             if (e.getProjectile() instanceof Arrow) {
                 Arrow arrow = (Arrow) e.getProjectile();
-                TickArrows.put(arrow.getUniqueId(), new HomingArrow(arrow));
+                register(new HomingArrow(arrow));
             }
         }
-    }
-
-    @NotNull
-    public static Logger getPluginLogger() {
-        return logger != null ? logger : Bukkit.getLogger();
     }
 }
