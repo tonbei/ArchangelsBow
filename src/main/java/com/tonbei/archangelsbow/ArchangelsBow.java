@@ -11,12 +11,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public final class ArchangelsBow extends JavaPlugin implements Listener {
@@ -40,7 +42,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
             isPaperMC = false;
         }
 
-        if (isDebug) Log.info("Server Type : " + (isPaperMC ? "PaperMC" : "Not PaperMC"));
+        Log.debug("Server Type : " + (isPaperMC ? "PaperMC" : "Not PaperMC"));
 
         new BukkitRunnable() {
             @Override
@@ -65,7 +67,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
                             }
                             defaultCheck = false;
                         } catch (IllegalAccessException | InvocationTargetException e) {
-                            e.printStackTrace();
+                            Log.error(e);
                         }
                     }
                     if (defaultCheck) {
@@ -86,8 +88,8 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     }
 
-    public static void register(TickArrow arrow) {
-        if (arrow == null) return;
+    public static void register(@NotNull TickArrow arrow) {
+        Objects.requireNonNull(arrow);
 
         TickArrows.put(arrow.getArrow().getUniqueId(), arrow);
     }

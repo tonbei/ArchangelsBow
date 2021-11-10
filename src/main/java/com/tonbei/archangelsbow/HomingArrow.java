@@ -8,9 +8,12 @@ package com.tonbei.archangelsbow;
 
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.entity.*;
+import org.bukkit.entity.AbstractArrow;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
-import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -106,7 +109,7 @@ public class HomingArrow extends TickArrow {
         newTargetCooldown = 5;
     }
 
-    private double sqrDistance(@NotNull Entity entity) {
+    private double sqrDistance(Entity entity) {
         Location al = this.getArrow().getLocation();
         Location el = entity.getLocation();
         double dx = al.getX() - el.getX();
@@ -115,7 +118,7 @@ public class HomingArrow extends TickArrow {
         return dx * dx + dy * dy + dz * dz;
     }
 
-    private double angleBetween(@NotNull Vector v1, @NotNull Vector v2) {
+    private double angleBetween(Vector v1, Vector v2) {
         //TODO
         double vDot = v1.dot(v2) / (v1.length() * v2.length());
         if (vDot < -1.0) {
@@ -149,8 +152,7 @@ public class HomingArrow extends TickArrow {
         return param;
     }
 
-    @Contract("_, _, _ -> new")
-    private @NotNull Vector transform(@NotNull Vector axis, double angle, @NotNull Vector normal) {
+    private Vector transform(Vector axis, double angle, Vector normal) {
         double m00 = 1;
         double m01 = 0;
         double m02 = 0;
