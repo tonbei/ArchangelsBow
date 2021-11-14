@@ -54,6 +54,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
                     if (!ta.isActive()) {
                         iterator.remove();
+                        Log.debug("TickArrow removed.");
                         continue;
                     }
 
@@ -92,6 +93,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         Objects.requireNonNull(arrow);
 
         TickArrows.put(arrow.getArrow().getUniqueId(), arrow);
+        Log.debug("TickArrow registered.");
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -100,6 +102,8 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
             if (e.getProjectile() instanceof Arrow) {
                 Arrow arrow = (Arrow) e.getProjectile();
                 register(new HomingArrow(arrow));
+
+                //TickArrows.entrySet().stream().map(map -> map.getKey().toString() + " : " + map.getValue().toString()).forEach(Log::debug);
             }
         }
     }

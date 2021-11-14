@@ -38,9 +38,10 @@ public class HomingArrow extends TickArrow {
     public void tick() {
         Arrow arrow = this.getArrow();
 
-        if (arrow.getTicksLived() > 3) {
+        if (arrow.getTicksLived() > 0) {
             if (hasTarget() && (target.isDead() || arrow.isOnGround())) {
                 target = null;
+                Log.debug("Target/Arrow is dead.");
             }
 
             if (!hasTarget() && !arrow.isOnGround() && newTargetCooldown <= 0) {
@@ -50,9 +51,10 @@ public class HomingArrow extends TickArrow {
             }
 
             if (hasTarget() && !arrow.isOnGround()) {
-                double mX = arrow.getVelocity().getX();
-                double mY = arrow.getVelocity().getY();
-                double mZ = arrow.getVelocity().getZ();
+                Vector velocity = arrow.getVelocity();
+                double mX = velocity.getX();
+                double mY = velocity.getY();
+                double mZ = velocity.getZ();
                 Location location = arrow.getLocation();
                 double pX = location.getX();
                 double pY = location.getY();
@@ -63,9 +65,9 @@ public class HomingArrow extends TickArrow {
                 Vector arrowLoc = new Vector(pX, pY, pZ);
                 Vector targetLoc = new Vector(targetLocation.getX(), targetLocation.getY() + target.getHeight() / 2, targetLocation.getZ());
 
-                Vector lookVec = targetLoc.subtract(arrowLoc);
+                Vector lookVec = targetLoc.subtract(arrowLoc).normalize();
 
-                Vector arrowMotion = new Vector(mX, mY, mZ);
+                Vector arrowMotion = new Vector(mX, mY, mZ).normalize();
 
                 double theta = wrap180Radian(angleBetween(arrowMotion, lookVec));
                 theta = clampAbs(theta, Math.PI / 2);
@@ -73,9 +75,10 @@ public class HomingArrow extends TickArrow {
                 Vector crossProduct = arrowMotion.getCrossProduct(lookVec).normalize();
 
                 Vector adjustedLookVec = transform(crossProduct, theta, arrowMotion);
-                //TODO
-                Location rotationVec = location.setDirection(adjustedLookVec);
-                arrow.setRotation(rotationVec.getYaw(), rotationVec.getPitch());
+
+                arrow.setVelocity(adjustedLookVec.multiply(2.75));
+
+                Log.debug("HomingArrow set the rotation. / " + adjustedLookVec + " / " + adjustedLookVec.length());
             }
         }
     }
@@ -104,6 +107,7 @@ public class HomingArrow extends TickArrow {
         if (!livingEntities.isEmpty()) {
             livingEntities.sort(Comparator.comparing(HomingArrow.this::sqrDistance, Double::compare));
             target = livingEntities.get(0);
+            Log.debug("Target Entity : " + target.toString());
         }
 
         newTargetCooldown = 5;
@@ -119,7 +123,6 @@ public class HomingArrow extends TickArrow {
     }
 
     private double angleBetween(Vector v1, Vector v2) {
-        //TODO
         double vDot = v1.dot(v2) / (v1.length() * v2.length());
         if (vDot < -1.0) {
             vDot = -1.0;
