@@ -42,7 +42,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
             isPaperMC = false;
         }
 
-        Log.debug("Server Type : " + (isPaperMC ? "PaperMC" : "Not PaperMC"));
+        Log.info("Server Type : " + (isPaperMC ? "PaperMC" : "Not PaperMC"));
 
         new BukkitRunnable() {
             @Override
@@ -58,7 +58,6 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
                         continue;
                     }
 
-                    boolean defaultCheck = true;
                     Arrow arrow = ta.getArrow();
 
                     if (isPaperMC) {
@@ -66,12 +65,12 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
                             if ((boolean) isTicking.invoke(arrow)) {
                                 ta.tick();
                             }
-                            defaultCheck = false;
                         } catch (IllegalAccessException | InvocationTargetException e) {
                             Log.error(e);
+                            isPaperMC = false;
                         }
                     }
-                    if (defaultCheck) {
+                    if (!isPaperMC) {
                         Location lo = arrow.getLocation();
                         World wo = arrow.getWorld();
 
