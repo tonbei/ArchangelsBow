@@ -1,0 +1,11 @@
+# 大天使の弓(Archangel's Bow)によって矢が発射されてから追尾を開始するまでのTick数
+# 初期値: 1
+startHomingTick: 1
+
+# 追尾対象を取得する範囲(x, y, z)
+# 初期値: 8.0
+searchRange: 8.0
+
+# 大天使の弓(Archangel's Bow)のクラフトレシピ 有効/無効
+# 初期値: true
+enableCraft: true

@@ -1,7 +1,10 @@
 package com.tonbei.archangelsbow;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -25,6 +28,9 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     public static final boolean isDebug = true;
 
+    static boolean isRecipeRegistered = false;
+    private ArchangelsBowConfig config;
+
     private boolean isPaperMC = false;
     private Method isTicking;
 
@@ -34,6 +40,8 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(this, this);
         Log.setLogger(this.getLogger());
+        config = new ArchangelsBowConfig(this);
+        if (config.isEnableCraft() && !isRecipeRegistered) ArchangelsBowUtil.addRecipe();
 
         try {
             isTicking = Entity.class.getMethod("isTicking");
@@ -85,7 +93,44 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        if (isRecipeRegistered)
+            ArchangelsBowUtil.removeRecipe();
+    }
 
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (args.length <= 0) return false;
+
+        if (args[0].equalsIgnoreCase("get")) {
+            if (!(sender instanceof Player)) {
+                Log.infoSenders("[" + ChatColor.GREEN + "Archangel's Bow" + ChatColor.RESET + "] "
+                                + ChatColor.RED + "This command can only be used in-game.", sender);
+                return true;
+            }
+
+            int level = 1;
+            if (args.length >= 2 && args[1].matches("^\\d+$")) {
+                level = Integer.parseInt(args[1]);
+            }
+            ((Player) sender).getInventory().addItem(ArchangelsBowUtil.getArchangelsBow(level));
+            return true;
+        }
+
+        if (args[0].equalsIgnoreCase("reload")) {
+            config.reloadConfig();
+
+            if (config.isEnableCraft() && !isRecipeRegistered) {
+                ArchangelsBowUtil.addRecipe();
+            } else if (!config.isEnableCraft() && isRecipeRegistered) {
+                ArchangelsBowUtil.removeRecipe();
+            }
+
+            Log.infoSenders("[" + ChatColor.GREEN + "Archangel's Bow" + ChatColor.RESET + "] "
+                            + ChatColor.GREEN + "Archangel's Bow configuration was reloaded.", sender);
+            return true;
+        }
+
+        return false;
     }
 
     public static void register(@NotNull TickArrow arrow) {
@@ -100,7 +145,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         if (e.getEntity() instanceof Player) {
             if (e.getProjectile() instanceof Arrow) {
                 Arrow arrow = (Arrow) e.getProjectile();
-                register(new HomingArrow(arrow));
+                register(new HomingArrow(arrow, config.getStartHomingTick(), config.getSearchRange()));
 
                 //TickArrows.entrySet().stream().map(map -> map.getKey().toString() + " : " + map.getValue().toString()).forEach(Log::debug);
             }

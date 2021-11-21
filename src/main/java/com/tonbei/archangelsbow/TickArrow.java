@@ -9,8 +9,8 @@ public abstract class TickArrow {
 
     private final Arrow arrow;
 
-    public TickArrow(@NotNull Arrow _arrow) {
-        arrow = Objects.requireNonNull(_arrow);
+    public TickArrow(@NotNull Arrow arrow) {
+        this.arrow = Objects.requireNonNull(arrow);
     }
 
     @NotNull

@@ -23,22 +23,28 @@ import java.util.stream.Collectors;
 
 public class HomingArrow extends TickArrow {
 
+    private final int startHomingTick;
+    private final double searchRange;
+
     private LivingEntity target;
     private int newTargetCooldown = 0;
 
-    public HomingArrow(@NotNull Arrow _arrow) {
-        super(_arrow);
-        _arrow.setDamage(2.0);
-        _arrow.setPickupStatus(AbstractArrow.PickupStatus.CREATIVE_ONLY);
-        _arrow.setCritical(true);
-        //_arrow.setPierceLevel();
+    public HomingArrow(@NotNull Arrow arrow, int startHomingTick, double searchRange) {
+        super(arrow);
+        arrow.setDamage(2.0);
+        arrow.setPickupStatus(AbstractArrow.PickupStatus.CREATIVE_ONLY);
+        arrow.setCritical(true);
+        //arrow.setPierceLevel();
+
+        this.startHomingTick = startHomingTick;
+        this.searchRange = searchRange;
     }
 
     @Override
     public void tick() {
         Arrow arrow = this.getArrow();
 
-        if (arrow.getTicksLived() > 0) {
+        if (arrow.getTicksLived() >= startHomingTick) {
             if (hasTarget() && (target.isDead() || arrow.isOnGround())) {
                 target = null;
                 Log.debug("Target/Arrow is dead.");
@@ -98,7 +104,7 @@ public class HomingArrow extends TickArrow {
     }
 
     private void findNewTarget() {
-        List<Entity> entities = this.getArrow().getNearbyEntities(8.0, 8.0, 8.0);
+        List<Entity> entities = this.getArrow().getNearbyEntities(searchRange, searchRange, searchRange);
         List<LivingEntity> livingEntities = entities.stream()
                                                     .filter(e -> e instanceof LivingEntity && !(e instanceof Player))
                                                     .map(e -> (LivingEntity)e)

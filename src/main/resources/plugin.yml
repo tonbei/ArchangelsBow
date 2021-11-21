@@ -3,3 +3,21 @@ version: '${project.version}'
 main: com.tonbei.archangelsbow.ArchangelsBow
 api-version: 1.17
 authors: [ tonbei10 ]
+description: Reborn of The Archangel's Smite
+
+commands:
+  archangelsbow:
+    description: Reborn of The Archangel's Smite
+    permission: archangelsbow.admin
+    permission-message: You don't have permission "<permission>".
+    usage: |
+      /<command> get [level] - Get new Archangel's Bow.
+      /<command> reload - Reload config.yml.
+
+permissions:
+  archangelsbow.use:
+    description: Allows players to use Archangel's Bow.
+    default: true
+  archangelsbow.admin:
+    description: Allows player to reload Archangel's Bow config file.
+    default: op

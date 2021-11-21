@@ -1,6 +1,7 @@
 package com.tonbei.archangelsbow;
 
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,14 +27,14 @@ public class Log {
         logger.log(Level.INFO, s);
     }
 
-    public static void infoPlayers(String s, Player... players) {
-        if (players == null) return;
-        for (Player p : players) p.sendMessage(s);
+    public static void infoSenders(String s, CommandSender... senders) {
+        if (senders == null) return;
+        for (CommandSender sender : senders) sender.sendMessage(s);
     }
 
-    public static void infoPlayers(String s, Collection<? extends Player> players) {
-        if (players == null) return;
-        players.forEach(p -> p.sendMessage(s));
+    public static void infoSenders(String s, Collection<? extends CommandSender> senders) {
+        if (senders == null) return;
+        senders.forEach(sender -> sender.sendMessage(s));
     }
 
     public static void infoAll(String s) {
