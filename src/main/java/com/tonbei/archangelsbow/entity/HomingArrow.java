@@ -4,8 +4,9 @@
  *
  *  Original Source : https://github.com/sinkillerj/ProjectE/blob/mc1.16.x/src/main/java/moze_intel/projecte/gameObjs/entity/EntityHomingArrow.java
  */
-package com.tonbei.archangelsbow;
+package com.tonbei.archangelsbow.entity;
 
+import com.tonbei.archangelsbow.Log;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.AbstractArrow;
@@ -107,7 +108,7 @@ public class HomingArrow extends TickArrow {
         List<Entity> entities = this.getArrow().getNearbyEntities(searchRange, searchRange, searchRange);
         List<LivingEntity> livingEntities = entities.stream()
                                                     .filter(e -> e instanceof LivingEntity && !(e instanceof Player))
-                                                    .map(e -> (LivingEntity)e)
+                                                    .map(e -> (LivingEntity) e)
                                                     .collect(Collectors.toList());
 
         if (!livingEntities.isEmpty()) {

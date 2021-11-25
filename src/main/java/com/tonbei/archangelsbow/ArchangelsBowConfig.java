@@ -4,7 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public class ArchangelsBowConfig {
 
-    private ArchangelsBow plugin;
+    private final ArchangelsBow plugin;
 
     private int startHomingTick = 1;
     private double searchRange = 8.0;
@@ -20,9 +20,9 @@ public class ArchangelsBowConfig {
         plugin.reloadConfig();
 
         FileConfiguration config = plugin.getConfig();
-        startHomingTick = Math.min(ArchangelsBowUtil.MAX_LEVEL, Math.max(0, config.getInt("startHomingTick", 1)));
-        searchRange = config.getDouble("searchRange", 8.0);
-        enableCraft = config.getBoolean("searchRange", true);
+        startHomingTick = Math.max(0, config.getInt("startHomingTick", 1));
+        searchRange = Math.max(0.0, config.getDouble("searchRange", 8.0));
+        enableCraft = config.getBoolean("enableCraft", true);
     }
 
     public int getStartHomingTick() {

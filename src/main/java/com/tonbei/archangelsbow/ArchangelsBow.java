@@ -1,5 +1,7 @@
 package com.tonbei.archangelsbow;
 
+import com.tonbei.archangelsbow.entity.HomingArrow;
+import com.tonbei.archangelsbow.entity.TickArrow;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -11,10 +13,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -27,6 +31,7 @@ import java.util.UUID;
 public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     public static final boolean isDebug = true;
+    public static final int BOW_MAX_LEVEL = 5;
 
     static boolean isRecipeRegistered = false;
     private ArchangelsBowConfig config;
@@ -82,7 +87,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
                         Location lo = arrow.getLocation();
                         World wo = arrow.getWorld();
 
-                        if (lo.isWorldLoaded() && wo.isChunkLoaded((int)Math.round(lo.getX()), (int)Math.round(lo.getZ())))
+                        if (lo.isWorldLoaded() && wo.isChunkLoaded((int) Math.round(lo.getX()), (int) Math.round(lo.getZ())))
                             if (wo.getChunkAt(lo).isEntitiesLoaded())
                                 ta.tick();
                     }
@@ -140,6 +145,20 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         Log.debug("TickArrow registered.");
     }
 
+    @Nullable
+    public static TickArrow remove(UUID key) {
+        return TickArrows.remove(key);
+    }
+
+    public static boolean isRegistered(UUID key) {
+        return TickArrows.containsKey(key);
+    }
+
+    @Nullable
+    public static TickArrow getTickArrow(UUID key) {
+        return TickArrows.get(key);
+    }
+
     @EventHandler(priority = EventPriority.NORMAL)
     public void onShootBow(EntityShootBowEvent e) {
         if (e.getEntity() instanceof Player) {
@@ -150,5 +169,9 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
                 //TickArrows.entrySet().stream().map(map -> map.getKey().toString() + " : " + map.getValue().toString()).forEach(Log::debug);
             }
         }
+    }
+
+    public void onHitArrow(EntityDamageByEntityEvent e) {
+        //TODO
     }
 }

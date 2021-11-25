@@ -17,8 +17,6 @@ import java.util.Iterator;
 
 public class ArchangelsBowUtil {
 
-    public static final int MAX_LEVEL = 1;
-
     @NotNull
     public static ItemStack getArchangelsBow(int level) {
         ItemStack bow = new ItemStack(Material.BOW);
@@ -26,7 +24,7 @@ public class ArchangelsBowUtil {
         meta.setDisplayName("Archangel's Bow");
         meta.setUnbreakable(true);
         bow.setItemMeta(meta);
-        bow.addUnsafeEnchantment(Enchantment.QUICK_CHARGE, Math.max(1, Math.min(level, MAX_LEVEL)));
+        bow.addUnsafeEnchantment(Enchantment.QUICK_CHARGE, Math.max(1, Math.min(level, ArchangelsBow.BOW_MAX_LEVEL)));
         return bow;
     }
 
@@ -64,7 +62,7 @@ public class ArchangelsBowUtil {
     }
 
     static ShapedRecipe getArchangelsBowRecipe(int level) {
-        level = Math.max(1, Math.min(level, MAX_LEVEL));
+        level = Math.max(1, Math.min(level, ArchangelsBow.BOW_MAX_LEVEL));
         ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(ArchangelsBow.getPlugin(ArchangelsBow.class), "ArchangelsBow_" + level),
                                                 getArchangelsBow(level));
         switch (level) {

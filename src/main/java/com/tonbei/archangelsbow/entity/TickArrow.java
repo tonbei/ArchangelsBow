@@ -1,4 +1,4 @@
-package com.tonbei.archangelsbow;
+package com.tonbei.archangelsbow.entity;
 
 import org.bukkit.entity.Arrow;
 import org.jetbrains.annotations.NotNull;
