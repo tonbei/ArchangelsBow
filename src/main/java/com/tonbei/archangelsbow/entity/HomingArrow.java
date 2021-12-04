@@ -66,15 +66,16 @@ public class HomingArrow extends TickArrow {
                 double pX = location.getX();
                 double pY = location.getY();
                 double pZ = location.getZ();
-                arrow.getWorld().spawnParticle(Particle.FLAME, pX + mX / 4.0D, pY + mY / 4.0D, pZ + mZ / 4.0D, 2, -mX / 2, -mY / 2 + 0.2D, -mZ / 2);
+                arrow.getWorld().spawnParticle(Particle.FLAME, pX + mX / 4.0D, pY + mY / 4.0D, pZ + mZ / 4.0D, 0, -mX / 2, -mY / 2 + 0.2D, -mZ / 2);
+                arrow.getWorld().spawnParticle(Particle.FLAME, pX + mX / 4.0D, pY + mY / 4.0D, pZ + mZ / 4.0D, 0, -mX / 2, -mY / 2 + 0.2D, -mZ / 2);
 
                 Location targetLocation = target.getLocation();
                 Vector arrowLoc = new Vector(pX, pY, pZ);
                 Vector targetLoc = new Vector(targetLocation.getX(), targetLocation.getY() + target.getHeight() / 2, targetLocation.getZ());
 
-                Vector lookVec = targetLoc.subtract(arrowLoc).normalize();
+                Vector lookVec = targetLoc.subtract(arrowLoc);
 
-                Vector arrowMotion = new Vector(mX, mY, mZ).normalize();
+                Vector arrowMotion = new Vector(mX, mY, mZ);
 
                 double theta = wrap180Radian(angleBetween(arrowMotion, lookVec));
                 theta = clampAbs(theta, Math.PI / 2);
@@ -83,10 +84,16 @@ public class HomingArrow extends TickArrow {
 
                 Vector adjustedLookVec = transform(crossProduct, theta, arrowMotion);
 
-                arrow.setVelocity(adjustedLookVec.multiply(2.75));
+                shoot(adjustedLookVec.getX(), adjustedLookVec.getY(), adjustedLookVec.getZ(), 1.0F, 0.0F);
 
                 Log.debug("HomingArrow set the rotation. / " + adjustedLookVec + " / " + adjustedLookVec.length());
             }
+        }
+
+        if (!hasTarget() && !arrow.isOnGround() && arrow.isInWater()) {
+            Vector vector = arrow.getVelocity();
+            vector.add(new Vector(0, 0.05F, 0)).multiply(1.65F).subtract(new Vector(0, 0.05F, 0));
+            arrow.setVelocity(vector);
         }
     }
 

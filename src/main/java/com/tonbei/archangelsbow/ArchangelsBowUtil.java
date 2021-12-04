@@ -4,12 +4,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,14 +19,19 @@ import java.util.Iterator;
 
 public class ArchangelsBowUtil {
 
+    public static final String BLESSING = "blessing";
+    public static final String HOMING = "homing";
+
     @NotNull
     public static ItemStack getArchangelsBow(int level) {
         ItemStack bow = new ItemStack(Material.BOW);
         ItemMeta meta = bow.getItemMeta();
         meta.setDisplayName("Archangel's Bow");
         meta.setUnbreakable(true);
+        meta.addEnchant(Enchantment.QUICK_CHARGE, 1, true);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        meta.getPersistentDataContainer().set(new NamespacedKey(ArchangelsBow.getInstance(), BLESSING), PersistentDataType.INTEGER, level);
         bow.setItemMeta(meta);
-        bow.addUnsafeEnchantment(Enchantment.QUICK_CHARGE, Math.max(1, Math.min(level, ArchangelsBow.BOW_MAX_LEVEL)));
         return bow;
     }
 
@@ -35,7 +42,9 @@ public class ArchangelsBowUtil {
                 && item.getItemMeta().hasDisplayName()
                 && item.getItemMeta().getDisplayName().equals("Archangel's Bow")
                 && item.getItemMeta().isUnbreakable()
-                && item.getEnchantmentLevel(Enchantment.QUICK_CHARGE) >= 1;
+                && item.getEnchantmentLevel(Enchantment.QUICK_CHARGE) == 1
+                && item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ENCHANTS)
+                && item.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(ArchangelsBow.getInstance(), BLESSING), PersistentDataType.INTEGER);
     }
 
     @NotNull
@@ -48,15 +57,20 @@ public class ArchangelsBowUtil {
     }
 
     static void addRecipe() {
-        Bukkit.addRecipe(getArchangelsBowRecipe(1));
+        if (Bukkit.addRecipe(getArchangelsBowRecipe(1)))
+            Log.info("Archangel's Bow Recipe registered.");
+
         ArchangelsBow.isRecipeRegistered = true;
     }
 
     static void removeRecipe() {
         Iterator<Recipe> iterator = Bukkit.recipeIterator();
-        while (iterator.hasNext())
-            if (isArchangelsBow(iterator.next().getResult()))
+        while (iterator.hasNext()) {
+            if (isArchangelsBow(iterator.next().getResult())) {
                 iterator.remove();
+                Log.info("Archangel's Bow Recipe removed.");
+            }
+        }
 
         ArchangelsBow.isRecipeRegistered = false;
     }
@@ -71,6 +85,7 @@ public class ArchangelsBowUtil {
                         .setIngredient('F', Material.FEATHER)
                         .setIngredient('T', Material.TRIDENT)
                         .setIngredient('M', new RecipeChoice.ExactChoice(getEnchantedBook(Enchantment.MENDING, 1, false)))
+                        .setIngredient('B', Material.BOW)
                         .setIngredient('I', new RecipeChoice.ExactChoice(getEnchantedBook(Enchantment.ARROW_INFINITE, 1, false)))
                         .setIngredient('C', Material.END_CRYSTAL)
                         .setIngredient('S', Material.NETHER_STAR);

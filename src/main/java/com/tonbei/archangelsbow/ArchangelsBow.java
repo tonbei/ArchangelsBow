@@ -2,8 +2,11 @@ package com.tonbei.archangelsbow;
 
 import com.tonbei.archangelsbow.entity.HomingArrow;
 import com.tonbei.archangelsbow.entity.TickArrow;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -13,8 +16,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
+import org.bukkit.event.world.EntitiesLoadEvent;
+import org.bukkit.event.world.EntitiesUnloadEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +41,8 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
     public static final boolean isDebug = true;
     public static final int BOW_MAX_LEVEL = 5;
 
+    private static ArchangelsBow instance;
+
     static boolean isRecipeRegistered = false;
     private ArchangelsBowConfig config;
 
@@ -43,6 +53,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
+        instance = this;
         this.getServer().getPluginManager().registerEvents(this, this);
         Log.setLogger(this.getLogger());
         config = new ArchangelsBowConfig(this);
@@ -94,6 +105,14 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
                 }
             }
         }.runTaskTimer(this, 0L, 1L);
+
+        Bukkit.getWorlds().forEach(world -> {
+            for (Chunk chunk : world.getLoadedChunks())
+                if (chunk.isEntitiesLoaded())
+                    for (Entity entity : chunk.getEntities())
+                        if (entity instanceof Arrow && !entity.isDead() && entity.getPersistentDataContainer().has(new NamespacedKey(this, ArchangelsBowUtil.HOMING), PersistentDataType.INTEGER))
+                            register(new HomingArrow((Arrow) entity, config.getStartHomingTick(), config.getSearchRange()));
+        });
     }
 
     @Override
@@ -138,11 +157,15 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         return false;
     }
 
+    public static ArchangelsBow getInstance() {
+        return instance != null ? instance : (instance = getPlugin(ArchangelsBow.class));
+    }
+
     public static void register(@NotNull TickArrow arrow) {
         Objects.requireNonNull(arrow);
 
-        TickArrows.put(arrow.getArrow().getUniqueId(), arrow);
-        Log.debug("TickArrow registered.");
+        if (TickArrows.putIfAbsent(arrow.getArrow().getUniqueId(), arrow) == null)
+            Log.debug("TickArrow registered.");
     }
 
     @Nullable
@@ -159,11 +182,14 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         return TickArrows.get(key);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onShootBow(EntityShootBowEvent e) {
         if (e.getEntity() instanceof Player) {
-            if (e.getProjectile() instanceof Arrow) {
+            if (e.getProjectile() instanceof Arrow && ArchangelsBowUtil.isArchangelsBow(e.getBow())) {
                 Arrow arrow = (Arrow) e.getProjectile();
+                //TODO 発射時の弓のレベルを格納
+                arrow.getPersistentDataContainer().set(new NamespacedKey(ArchangelsBow.getInstance(), ArchangelsBowUtil.HOMING), PersistentDataType.INTEGER,
+                        e.getBow().getItemMeta().getPersistentDataContainer().getOrDefault(new NamespacedKey(ArchangelsBow.getInstance(), ArchangelsBowUtil.BLESSING), PersistentDataType.INTEGER, 0));
                 register(new HomingArrow(arrow, config.getStartHomingTick(), config.getSearchRange()));
 
                 //TickArrows.entrySet().stream().map(map -> map.getKey().toString() + " : " + map.getValue().toString()).forEach(Log::debug);
@@ -171,7 +197,33 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onEntitiesLoad(EntitiesLoadEvent e) {
+        e.getEntities().forEach(entity -> {
+            if (entity instanceof Arrow && !entity.isDead() && entity.getPersistentDataContainer().has(new NamespacedKey(ArchangelsBow.getInstance(), ArchangelsBowUtil.HOMING), PersistentDataType.INTEGER)) {
+                register(new HomingArrow((Arrow) entity, config.getStartHomingTick(), config.getSearchRange()));
+            }
+        });
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onEntitiesUnload(EntitiesUnloadEvent e) {
+        e.getEntities().forEach(entity -> {
+            if (entity instanceof Arrow && isRegistered(entity.getUniqueId())) {
+                remove(entity.getUniqueId());
+            }
+        });
+    }
+
     public void onHitArrow(EntityDamageByEntityEvent e) {
+        //TODO
+    }
+
+    public void onSetBowInAnvil(PrepareAnvilEvent e) {
+        //TODO
+    }
+
+    public void onSetBowInEnchantTable(PrepareItemEnchantEvent e) {
         //TODO
     }
 }
