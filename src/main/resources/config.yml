@@ -9,3 +9,7 @@ searchRange: 8.0
 # 大天使の弓(Archangel's Bow)のクラフトレシピ 有効/無効
 # 初期値: true
 enableCraft: true
+
+# デバッグログの表示/非表示
+# 初期値: false
+debug: false

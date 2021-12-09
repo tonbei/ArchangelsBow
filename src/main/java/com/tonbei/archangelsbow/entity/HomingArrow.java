@@ -86,14 +86,14 @@ public class HomingArrow extends TickArrow {
 
                 shoot(adjustedLookVec.getX(), adjustedLookVec.getY(), adjustedLookVec.getZ(), 1.0F, 0.0F);
 
-                Log.debug("HomingArrow set the rotation. / " + adjustedLookVec + " / " + adjustedLookVec.length());
+                Log.debug("HomingArrow's rotation has been adjusted. / " + adjustedLookVec + " / " + adjustedLookVec.length());
             }
         }
 
         if (!hasTarget() && !arrow.isOnGround() && arrow.isInWater()) {
-            Vector vector = arrow.getVelocity();
-            vector.add(new Vector(0, 0.05F, 0)).multiply(1.65F).subtract(new Vector(0, 0.05F, 0));
-            arrow.setVelocity(vector);
+            Vector velocity = arrow.getVelocity();
+            velocity.add(new Vector(0, 0.05F, 0)).multiply(1.65F).subtract(new Vector(0, 0.05F, 0));
+            arrow.setVelocity(velocity);
         }
     }
 

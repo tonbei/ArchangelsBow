@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -38,13 +37,9 @@ import java.util.UUID;
 
 public final class ArchangelsBow extends JavaPlugin implements Listener {
 
-    public static final boolean isDebug = true;
-    public static final int BOW_MAX_LEVEL = 5;
-
     private static ArchangelsBow instance;
 
-    static boolean isRecipeRegistered = false;
-    private ArchangelsBowConfig config;
+    private ABConfig config;
 
     private boolean isPaperMC = false;
     private Method isTicking;
@@ -56,8 +51,9 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         instance = this;
         this.getServer().getPluginManager().registerEvents(this, this);
         Log.setLogger(this.getLogger());
-        config = new ArchangelsBowConfig(this);
-        if (config.isEnableCraft() && !isRecipeRegistered) ArchangelsBowUtil.addRecipe();
+        ABUtil.init(this);
+        config = new ABConfig(this);
+        if (ABConfig.isEnableCraft() && !ABUtil.isRecipeRegistered) ABUtil.addRecipe();
 
         try {
             isTicking = Entity.class.getMethod("isTicking");
@@ -78,7 +74,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
                     if (!ta.isActive()) {
                         iterator.remove();
-                        Log.debug("TickArrow removed.");
+                        Log.debug("TickArrow is removed.");
                         continue;
                     }
 
@@ -106,19 +102,18 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
             }
         }.runTaskTimer(this, 0L, 1L);
 
-        Bukkit.getWorlds().forEach(world -> {
+        for (World world : Bukkit.getWorlds())
             for (Chunk chunk : world.getLoadedChunks())
                 if (chunk.isEntitiesLoaded())
                     for (Entity entity : chunk.getEntities())
-                        if (entity instanceof Arrow && !entity.isDead() && entity.getPersistentDataContainer().has(new NamespacedKey(this, ArchangelsBowUtil.HOMING), PersistentDataType.INTEGER))
-                            register(new HomingArrow((Arrow) entity, config.getStartHomingTick(), config.getSearchRange()));
-        });
+                        if (ABUtil.isHomingArrow(entity))
+                            register(new HomingArrow((Arrow) entity, ABConfig.getStartHomingTick(), ABConfig.getSearchRange()));
     }
 
     @Override
     public void onDisable() {
-        if (isRecipeRegistered)
-            ArchangelsBowUtil.removeRecipe();
+        if (ABUtil.isRecipeRegistered)
+            ABUtil.removeRecipe();
     }
 
     @Override
@@ -136,17 +131,17 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
             if (args.length >= 2 && args[1].matches("^\\d+$")) {
                 level = Integer.parseInt(args[1]);
             }
-            ((Player) sender).getInventory().addItem(ArchangelsBowUtil.getArchangelsBow(level));
+            ((Player) sender).getInventory().addItem(ABUtil.getArchangelsBow(level));
             return true;
         }
 
         if (args[0].equalsIgnoreCase("reload")) {
             config.reloadConfig();
 
-            if (config.isEnableCraft() && !isRecipeRegistered) {
-                ArchangelsBowUtil.addRecipe();
-            } else if (!config.isEnableCraft() && isRecipeRegistered) {
-                ArchangelsBowUtil.removeRecipe();
+            if (ABConfig.isEnableCraft() && !ABUtil.isRecipeRegistered) {
+                ABUtil.addRecipe();
+            } else if (!ABConfig.isEnableCraft() && ABUtil.isRecipeRegistered) {
+                ABUtil.removeRecipe();
             }
 
             Log.infoSenders("[" + ChatColor.GREEN + "Archangel's Bow" + ChatColor.RESET + "] "
@@ -165,7 +160,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         Objects.requireNonNull(arrow);
 
         if (TickArrows.putIfAbsent(arrow.getArrow().getUniqueId(), arrow) == null)
-            Log.debug("TickArrow registered.");
+            Log.debug("TickArrow is registered.");
     }
 
     @Nullable
@@ -185,12 +180,12 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onShootBow(EntityShootBowEvent e) {
         if (e.getEntity() instanceof Player) {
-            if (e.getProjectile() instanceof Arrow && ArchangelsBowUtil.isArchangelsBow(e.getBow())) {
+            if (e.getProjectile() instanceof Arrow && ABUtil.isArchangelsBow(e.getBow())) {
                 Arrow arrow = (Arrow) e.getProjectile();
                 //TODO 発射時の弓のレベルを格納
-                arrow.getPersistentDataContainer().set(new NamespacedKey(ArchangelsBow.getInstance(), ArchangelsBowUtil.HOMING), PersistentDataType.INTEGER,
-                        e.getBow().getItemMeta().getPersistentDataContainer().getOrDefault(new NamespacedKey(ArchangelsBow.getInstance(), ArchangelsBowUtil.BLESSING), PersistentDataType.INTEGER, 0));
-                register(new HomingArrow(arrow, config.getStartHomingTick(), config.getSearchRange()));
+                arrow.getPersistentDataContainer().set(ABUtil.getHoming(), PersistentDataType.INTEGER,
+                        e.getBow().getItemMeta().getPersistentDataContainer().getOrDefault(ABUtil.getBlessing(), PersistentDataType.INTEGER, 0));
+                register(new HomingArrow(arrow, ABConfig.getStartHomingTick(), ABConfig.getSearchRange()));
 
                 //TickArrows.entrySet().stream().map(map -> map.getKey().toString() + " : " + map.getValue().toString()).forEach(Log::debug);
             }
@@ -199,20 +194,16 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntitiesLoad(EntitiesLoadEvent e) {
-        e.getEntities().forEach(entity -> {
-            if (entity instanceof Arrow && !entity.isDead() && entity.getPersistentDataContainer().has(new NamespacedKey(ArchangelsBow.getInstance(), ArchangelsBowUtil.HOMING), PersistentDataType.INTEGER)) {
-                register(new HomingArrow((Arrow) entity, config.getStartHomingTick(), config.getSearchRange()));
-            }
-        });
+        for (Entity entity : e.getEntities())
+            if (ABUtil.isHomingArrow(entity))
+                register(new HomingArrow((Arrow) entity, ABConfig.getStartHomingTick(), ABConfig.getSearchRange()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntitiesUnload(EntitiesUnloadEvent e) {
-        e.getEntities().forEach(entity -> {
-            if (entity instanceof Arrow && isRegistered(entity.getUniqueId())) {
+        for (Entity entity : e.getEntities())
+            if (entity instanceof Arrow && isRegistered(entity.getUniqueId()))
                 remove(entity.getUniqueId());
-            }
-        });
     }
 
     public void onHitArrow(EntityDamageByEntityEvent e) {

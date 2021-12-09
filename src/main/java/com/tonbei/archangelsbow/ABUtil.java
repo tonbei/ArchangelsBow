@@ -4,23 +4,47 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ArchangelsBowUtil {
+public class ABUtil {
 
-    public static final String BLESSING = "blessing";
-    public static final String HOMING = "homing";
+    public static final int BOW_MAX_LEVEL = 1;
+
+    static boolean isRecipeRegistered = false;
+
+    private static NamespacedKey BLESSING;
+    private static NamespacedKey HOMING;
+    private static final List<NamespacedKey> recipeKeys = new ArrayList<>();
+
+    static void init(Plugin plugin) {
+        BLESSING = new NamespacedKey(plugin, "blessing");
+        HOMING = new NamespacedKey(plugin, "homing");
+
+        for (int level = 1; level <= BOW_MAX_LEVEL; level++)
+            recipeKeys.add(new NamespacedKey(plugin, "bow_level_" + level));
+    }
+
+    public static NamespacedKey getBlessing() {
+        return BLESSING;
+    }
+
+    public static NamespacedKey getHoming() {
+        return HOMING;
+    }
 
     @NotNull
     public static ItemStack getArchangelsBow(int level) {
@@ -30,7 +54,7 @@ public class ArchangelsBowUtil {
         meta.setUnbreakable(true);
         meta.addEnchant(Enchantment.QUICK_CHARGE, 1, true);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-        meta.getPersistentDataContainer().set(new NamespacedKey(ArchangelsBow.getInstance(), BLESSING), PersistentDataType.INTEGER, level);
+        meta.getPersistentDataContainer().set(BLESSING, PersistentDataType.INTEGER, level);
         bow.setItemMeta(meta);
         return bow;
     }
@@ -44,7 +68,13 @@ public class ArchangelsBowUtil {
                 && item.getItemMeta().isUnbreakable()
                 && item.getEnchantmentLevel(Enchantment.QUICK_CHARGE) == 1
                 && item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ENCHANTS)
-                && item.getItemMeta().getPersistentDataContainer().has(new NamespacedKey(ArchangelsBow.getInstance(), BLESSING), PersistentDataType.INTEGER);
+                && item.getItemMeta().getPersistentDataContainer().has(BLESSING, PersistentDataType.INTEGER);
+    }
+
+    public static boolean isHomingArrow(@Nullable Entity entity) {
+        return entity instanceof Arrow
+                && !entity.isDead()
+                && entity.getPersistentDataContainer().has(HOMING, PersistentDataType.INTEGER);
     }
 
     @NotNull
@@ -57,28 +87,30 @@ public class ArchangelsBowUtil {
     }
 
     static void addRecipe() {
-        if (Bukkit.addRecipe(getArchangelsBowRecipe(1)))
-            Log.info("Archangel's Bow Recipe registered.");
-
-        ArchangelsBow.isRecipeRegistered = true;
-    }
-
-    static void removeRecipe() {
-        Iterator<Recipe> iterator = Bukkit.recipeIterator();
-        while (iterator.hasNext()) {
-            if (isArchangelsBow(iterator.next().getResult())) {
-                iterator.remove();
-                Log.info("Archangel's Bow Recipe removed.");
+        int level = 1;
+        for (NamespacedKey key : recipeKeys) {
+            if (!Bukkit.addRecipe(getArchangelsBowRecipe(level++))) {
+                Log.warning("Failed to register Archangel's Bow Recipe.");
+                removeRecipe();
+                return;
             }
         }
 
-        ArchangelsBow.isRecipeRegistered = false;
+        Log.info("Archangel's Bow Recipes are registered.");
+        isRecipeRegistered = true;
+    }
+
+    static void removeRecipe() {
+        for (NamespacedKey key : recipeKeys)
+            Bukkit.removeRecipe(key);
+
+        Log.info("Archangel's Bow Recipes are removed.");
+        isRecipeRegistered = false;
     }
 
     static ShapedRecipe getArchangelsBowRecipe(int level) {
-        level = Math.max(1, Math.min(level, ArchangelsBow.BOW_MAX_LEVEL));
-        ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(ArchangelsBow.getPlugin(ArchangelsBow.class), "ArchangelsBow_" + level),
-                                                getArchangelsBow(level));
+        level = Math.max(1, Math.min(level, BOW_MAX_LEVEL));
+        ShapedRecipe recipe = new ShapedRecipe(recipeKeys.get(level - 1), getArchangelsBow(level));
         switch (level) {
             case 1:
                 recipe.shape("FTF", "MBI", "CSC")

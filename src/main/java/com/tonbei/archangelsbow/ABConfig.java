@@ -2,15 +2,16 @@ package com.tonbei.archangelsbow;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-public class ArchangelsBowConfig {
+public class ABConfig {
 
     private final ArchangelsBow plugin;
 
-    private int startHomingTick = 1;
-    private double searchRange = 8.0;
-    private boolean enableCraft = true;
+    private static int startHomingTick = 1;
+    private static double searchRange = 8.0;
+    private static boolean enableCraft = true;
+    private static boolean debug = false;
 
-    public ArchangelsBowConfig(ArchangelsBow plugin) {
+    public ABConfig(ArchangelsBow plugin) {
         this.plugin = plugin;
         reloadConfig();
     }
@@ -23,17 +24,22 @@ public class ArchangelsBowConfig {
         startHomingTick = Math.max(0, config.getInt("startHomingTick", 1));
         searchRange = Math.max(0.0, config.getDouble("searchRange", 8.0));
         enableCraft = config.getBoolean("enableCraft", true);
+        debug = config.getBoolean("debug", false);
     }
 
-    public int getStartHomingTick() {
+    public static int getStartHomingTick() {
         return startHomingTick;
     }
 
-    public double getSearchRange() {
+    public static double getSearchRange() {
         return searchRange;
     }
 
-    public boolean isEnableCraft() {
+    public static boolean isEnableCraft() {
         return enableCraft;
+    }
+
+    public static boolean isDebug() {
+        return debug;
     }
 }
