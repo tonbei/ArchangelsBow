@@ -2,6 +2,7 @@ package com.tonbei.archangelsbow;
 
 import com.tonbei.archangelsbow.entity.HomingArrow;
 import com.tonbei.archangelsbow.entity.TickArrow;
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
@@ -37,8 +38,6 @@ import java.util.UUID;
 
 public final class ArchangelsBow extends JavaPlugin implements Listener {
 
-    private static ArchangelsBow instance;
-
     private ABConfig config;
 
     private boolean isPaperMC = false;
@@ -48,12 +47,11 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        instance = this;
         this.getServer().getPluginManager().registerEvents(this, this);
         Log.setLogger(this.getLogger());
         ABUtil.init(this);
         config = new ABConfig(this);
-        if (ABConfig.isEnableCraft() && !ABUtil.isRecipeRegistered) ABUtil.addRecipe();
+        if (ABConfig.isEnableCraft()) ABUtil.addRecipe();
 
         try {
             isTicking = Entity.class.getMethod("isTicking");
@@ -112,8 +110,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        if (ABUtil.isRecipeRegistered)
-            ABUtil.removeRecipe();
+        ABUtil.removeRecipe(false);
     }
 
     @Override
@@ -138,10 +135,10 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         if (args[0].equalsIgnoreCase("reload")) {
             config.reloadConfig();
 
-            if (ABConfig.isEnableCraft() && !ABUtil.isRecipeRegistered) {
+            if (ABConfig.isEnableCraft()) {
                 ABUtil.addRecipe();
-            } else if (!ABConfig.isEnableCraft() && ABUtil.isRecipeRegistered) {
-                ABUtil.removeRecipe();
+            } else {
+                ABUtil.removeRecipe(false);
             }
 
             Log.infoSenders("[" + ChatColor.GREEN + "Archangel's Bow" + ChatColor.RESET + "] "
@@ -152,12 +149,8 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         return false;
     }
 
-    public static ArchangelsBow getInstance() {
-        return instance != null ? instance : (instance = getPlugin(ArchangelsBow.class));
-    }
-
     public static void register(@NotNull TickArrow arrow) {
-        Objects.requireNonNull(arrow);
+        Validate.notNull(arrow, "TickArrow must not be null.");
 
         if (TickArrows.putIfAbsent(arrow.getArrow().getUniqueId(), arrow) == null)
             Log.debug("TickArrow is registered.");

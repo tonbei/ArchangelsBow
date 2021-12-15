@@ -1,5 +1,6 @@
 package com.tonbei.archangelsbow.entity;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Arrow;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,8 @@ public abstract class TickArrow {
     protected final Random random = new Random();
 
     public TickArrow(@NotNull Arrow arrow) {
-        this.arrow = Objects.requireNonNull(arrow);
+        Validate.notNull(arrow, "Arrow must not be null.");
+        this.arrow = arrow;
     }
 
     @NotNull

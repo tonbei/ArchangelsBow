@@ -24,7 +24,7 @@ public class ABUtil {
 
     public static final int BOW_MAX_LEVEL = 1;
 
-    static boolean isRecipeRegistered = false;
+    private static boolean isRecipeRegistered = false;
 
     private static NamespacedKey BLESSING;
     private static NamespacedKey HOMING;
@@ -34,6 +34,7 @@ public class ABUtil {
         BLESSING = new NamespacedKey(plugin, "blessing");
         HOMING = new NamespacedKey(plugin, "homing");
 
+        recipeKeys.clear();
         for (int level = 1; level <= BOW_MAX_LEVEL; level++)
             recipeKeys.add(new NamespacedKey(plugin, "bow_level_" + level));
     }
@@ -54,6 +55,7 @@ public class ABUtil {
         meta.setUnbreakable(true);
         meta.addEnchant(Enchantment.QUICK_CHARGE, 1, true);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        level = Math.max(1, Math.min(level, BOW_MAX_LEVEL));
         meta.getPersistentDataContainer().set(BLESSING, PersistentDataType.INTEGER, level);
         bow.setItemMeta(meta);
         return bow;
@@ -87,11 +89,12 @@ public class ABUtil {
     }
 
     static void addRecipe() {
-        int level = 1;
-        for (NamespacedKey key : recipeKeys) {
-            if (!Bukkit.addRecipe(getArchangelsBowRecipe(level++))) {
+        if (isRecipeRegistered) return;
+
+        for (int level = 1; level <= BOW_MAX_LEVEL; level++) {
+            if (!Bukkit.addRecipe(getArchangelsBowRecipe(level))) {
                 Log.warning("Failed to register Archangel's Bow Recipe.");
-                removeRecipe();
+                removeRecipe(true);
                 return;
             }
         }
@@ -100,7 +103,9 @@ public class ABUtil {
         isRecipeRegistered = true;
     }
 
-    static void removeRecipe() {
+    static void removeRecipe(boolean force) {
+        if (!force && !isRecipeRegistered) return;
+
         for (NamespacedKey key : recipeKeys)
             Bukkit.removeRecipe(key);
 
