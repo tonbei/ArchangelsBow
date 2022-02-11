@@ -4,9 +4,9 @@
  *
  *  Original Source : https://github.com/sinkillerj/ProjectE/blob/mc1.16.x/src/main/java/moze_intel/projecte/gameObjs/entity/EntityHomingArrow.java
  */
-package com.tonbei.archangelsbow.entity;
+package com.github.tonbei.archangelsbow.entity;
 
-import com.tonbei.archangelsbow.Log;
+import com.github.tonbei.archangelsbow.Log;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.AbstractArrow;

@@ -1,4 +1,4 @@
-package com.tonbei.archangelsbow;
+package com.github.tonbei.archangelsbow;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;

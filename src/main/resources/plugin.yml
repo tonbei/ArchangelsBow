@@ -1,6 +1,6 @@
 name: ArchangelsBow
 version: '${project.version}'
-main: com.tonbei.archangelsbow.ArchangelsBow
+main: com.github.tonbei.archangelsbow.ArchangelsBow
 api-version: 1.17
 prefix: Archangel's Bow
 authors: [ tonbei10 ]

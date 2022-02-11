@@ -1,7 +1,7 @@
-package com.tonbei.archangelsbow;
+package com.github.tonbei.archangelsbow;
 
-import com.tonbei.archangelsbow.entity.HomingArrow;
-import com.tonbei.archangelsbow.entity.TickArrow;
+import com.github.tonbei.archangelsbow.entity.HomingArrow;
+import com.github.tonbei.archangelsbow.entity.TickArrow;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,7 +33,6 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 
 public final class ArchangelsBow extends JavaPlugin implements Listener {
