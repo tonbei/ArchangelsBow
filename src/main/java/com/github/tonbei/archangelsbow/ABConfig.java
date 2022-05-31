@@ -6,10 +6,10 @@ public class ABConfig {
 
     private final ArchangelsBow plugin;
 
-    private static int startHomingTick = 1;
-    private static double searchRange = 8.0;
-    private static boolean enableCraft = true;
-    private static boolean debug = false;
+    private int startHomingTick = 1;
+    private double searchRange = 8.0;
+    private boolean enableCraft = true;
+    private boolean debug = false;
 
     public ABConfig(ArchangelsBow plugin) {
         this.plugin = plugin;
@@ -27,19 +27,19 @@ public class ABConfig {
         debug = config.getBoolean("debug", false);
     }
 
-    public static int getStartHomingTick() {
+    public int getStartHomingTick() {
         return startHomingTick;
     }
 
-    public static double getSearchRange() {
+    public double getSearchRange() {
         return searchRange;
     }
 
-    public static boolean isEnableCraft() {
+    public boolean isEnableCraft() {
         return enableCraft;
     }
 
-    public static boolean isDebug() {
+    public boolean isDebug() {
         return debug;
     }
 }

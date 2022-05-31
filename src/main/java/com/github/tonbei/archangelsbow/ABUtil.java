@@ -13,7 +13,6 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -30,7 +29,7 @@ public class ABUtil {
     private static NamespacedKey HOMING;
     private static final List<NamespacedKey> recipeKeys = new ArrayList<>();
 
-    static void init(Plugin plugin) {
+    static void init(ArchangelsBow plugin) {
         BLESSING = new NamespacedKey(plugin, "blessing");
         HOMING = new NamespacedKey(plugin, "homing");
 

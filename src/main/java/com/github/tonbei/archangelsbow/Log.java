@@ -18,7 +18,7 @@ public class Log {
     }
 
     public static void debug(String s) {
-        if (ABConfig.isDebug())
+        if (ArchangelsBow.getInstance().getABConfig().isDebug())
             logger.log(Level.INFO, s);
     }
 
