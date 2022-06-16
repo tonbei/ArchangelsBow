@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.CrossbowMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -48,26 +49,27 @@ public class ABUtil {
 
     @NotNull
     public static ItemStack getArchangelsBow(int level) {
-        ItemStack bow = new ItemStack(Material.BOW);
+        ItemStack bow = new ItemStack(Material.CROSSBOW);
         ItemMeta meta = bow.getItemMeta();
         meta.setDisplayName("Archangel's Bow");
         meta.setUnbreakable(true);
-        meta.addEnchant(Enchantment.QUICK_CHARGE, 1, true);
+        meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         level = Math.max(1, Math.min(level, BOW_MAX_LEVEL));
         meta.getPersistentDataContainer().set(BLESSING, PersistentDataType.INTEGER, level);
+        ((CrossbowMeta) meta).addChargedProjectile(new ItemStack(Material.ARROW));
         bow.setItemMeta(meta);
         return bow;
     }
 
     public static boolean isArchangelsBow(@Nullable ItemStack item) {
         return item != null
-                && item.getType() == Material.BOW
+                && item.getType() == Material.CROSSBOW
                 && item.hasItemMeta()
                 && item.getItemMeta().hasDisplayName()
                 && item.getItemMeta().getDisplayName().equals("Archangel's Bow")
                 && item.getItemMeta().isUnbreakable()
-                && item.getEnchantmentLevel(Enchantment.QUICK_CHARGE) == 1
+                && item.getEnchantmentLevel(Enchantment.BINDING_CURSE) == 1
                 && item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ENCHANTS)
                 && item.getItemMeta().getPersistentDataContainer().has(BLESSING, PersistentDataType.INTEGER);
     }

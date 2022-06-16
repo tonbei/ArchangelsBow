@@ -14,6 +14,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Tameable;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -35,6 +36,7 @@ public class HomingArrow extends TickArrow {
         arrow.setDamage(2.0);
         arrow.setPickupStatus(AbstractArrow.PickupStatus.CREATIVE_ONLY);
         arrow.setCritical(true);
+        //arrow.setShotFromCrossbow(true);
         //arrow.setPierceLevel();
 
         this.startHomingTick = startHomingTick;
@@ -114,7 +116,9 @@ public class HomingArrow extends TickArrow {
     private void findNewTarget() {
         List<Entity> entities = this.getArrow().getNearbyEntities(searchRange, searchRange, searchRange);
         List<LivingEntity> livingEntities = entities.stream()
-                                                    .filter(e -> e instanceof LivingEntity && !(e instanceof Player))
+                                                    .filter(e -> e instanceof LivingEntity
+                                                            && !(e instanceof Player)
+                                                            && !(e instanceof Tameable && ((Tameable) e).isTamed()))
                                                     .map(e -> (LivingEntity) e)
                                                     .collect(Collectors.toList());
 
