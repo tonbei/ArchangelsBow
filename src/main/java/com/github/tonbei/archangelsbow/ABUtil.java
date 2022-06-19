@@ -1,6 +1,5 @@
 package com.github.tonbei.archangelsbow;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -8,8 +7,6 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.CrossbowMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -17,32 +14,23 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Locale;
 
 public class ABUtil {
 
     public static final int BOW_MAX_LEVEL = 1;
 
-    private static boolean isRecipeRegistered = false;
+    private static final String AB_NAMESPACE = "ArchangelsBow".toLowerCase(Locale.ROOT);
 
-    private static NamespacedKey BLESSING;
-    private static NamespacedKey HOMING;
-    private static final List<NamespacedKey> recipeKeys = new ArrayList<>();
+    private static final NamespacedKey BLESSING = new NamespacedKey(AB_NAMESPACE, "blessing");
+    private static final NamespacedKey HOMING = new NamespacedKey(AB_NAMESPACE, "homing");
 
-    static void init(ArchangelsBow plugin) {
-        BLESSING = new NamespacedKey(plugin, "blessing");
-        HOMING = new NamespacedKey(plugin, "homing");
-
-        recipeKeys.clear();
-        for (int level = 1; level <= BOW_MAX_LEVEL; level++)
-            recipeKeys.add(new NamespacedKey(plugin, "bow_level_" + level));
-    }
-
+    @NotNull
     public static NamespacedKey getBlessing() {
         return BLESSING;
     }
 
+    @NotNull
     public static NamespacedKey getHoming() {
         return HOMING;
     }
@@ -87,48 +75,5 @@ public class ABUtil {
         meta.addStoredEnchant(enchantment, level, ignoreLevelRestriction);
         enchantBook.setItemMeta(meta);
         return enchantBook;
-    }
-
-    static void addRecipe() {
-        if (isRecipeRegistered) return;
-
-        for (int level = 1; level <= BOW_MAX_LEVEL; level++) {
-            if (!Bukkit.addRecipe(getArchangelsBowRecipe(level))) {
-                Log.warning("Failed to register Archangel's Bow Recipe.");
-                removeRecipe(true);
-                return;
-            }
-        }
-
-        Log.info("Archangel's Bow Recipes are registered.");
-        isRecipeRegistered = true;
-    }
-
-    static void removeRecipe(boolean force) {
-        if (!force && !isRecipeRegistered) return;
-
-        for (NamespacedKey key : recipeKeys)
-            Bukkit.removeRecipe(key);
-
-        Log.info("Archangel's Bow Recipes are removed.");
-        isRecipeRegistered = false;
-    }
-
-    static ShapedRecipe getArchangelsBowRecipe(int level) {
-        level = Math.max(1, Math.min(level, BOW_MAX_LEVEL));
-        ShapedRecipe recipe = new ShapedRecipe(recipeKeys.get(level - 1), getArchangelsBow(level));
-        switch (level) {
-            case 1:
-                recipe.shape("FTF", "MBI", "CSC")
-                        .setIngredient('F', Material.FEATHER)
-                        .setIngredient('T', Material.TRIDENT)
-                        .setIngredient('M', new RecipeChoice.ExactChoice(getEnchantedBook(Enchantment.MENDING, 1, false)))
-                        .setIngredient('B', Material.BOW)
-                        .setIngredient('I', new RecipeChoice.ExactChoice(getEnchantedBook(Enchantment.ARROW_INFINITE, 1, false)))
-                        .setIngredient('C', Material.END_CRYSTAL)
-                        .setIngredient('S', Material.NETHER_STAR);
-                break;
-        }
-        return recipe;
     }
 }

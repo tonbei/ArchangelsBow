@@ -1,14 +1,13 @@
 package com.github.tonbei.archangelsbow;
 
 import com.github.tonbei.archangelsbow.entity.HomingArrow;
-import com.github.tonbei.archangelsbow.entity.TickArrow;
 import com.github.tonbei.archangelsbow.events.ShootArrowEvent;
 import com.github.tonbei.archangelsbow.events.TickArrowLoadEvent;
+import com.github.tonbei.archangelsbow.manager.ABRecipeManager;
 import com.github.tonbei.archangelsbow.manager.TickArrowManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
-import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -17,90 +16,36 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
 
 public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     private static ArchangelsBow INSTANCE;
 
     private ABConfig config;
-
-    private boolean isPaperMC = false;
-    private Method isTicking;
+    private ABRecipeManager recipeManager;
 
     public static ArchangelsBow getInstance() {
         return INSTANCE != null ? INSTANCE : (INSTANCE = getPlugin(ArchangelsBow.class));
     }
 
-    public ABConfig getABConfig() {
-        return config;
+    public static ABConfig getABConfig() {
+        return getInstance().config;
     }
 
     @Override
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(new TickArrowLoadEvent(), this);
         this.getServer().getPluginManager().registerEvents(new ShootArrowEvent(), this);
+
         INSTANCE = this;
         Log.setLogger(this.getLogger());
-        ABUtil.init(this);
         config = new ABConfig(this);
-        if (config.isEnableCraft()) ABUtil.addRecipe();
+        recipeManager = new ABRecipeManager(this);
+        if (config.isEnableCraft()) recipeManager.addRecipe();
 
-        try {
-            isTicking = Entity.class.getMethod("isTicking");
-            isPaperMC = true;
-        } catch (NoSuchMethodException e) {
-            isPaperMC = false;
-        }
-
-        Log.info("Server Type : " + (isPaperMC ? "PaperMC" : "Not PaperMC"));
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                Iterator<Map.Entry<UUID, TickArrow>> iterator = TickArrowManager.getIterator();
-
-                while (iterator.hasNext()) {
-                    TickArrow ta = iterator.next().getValue();
-
-                    if (!ta.isActive()) {
-                        iterator.remove();
-                        Log.debug("TickArrow is removed.");
-                        continue;
-                    }
-
-                    Arrow arrow = ta.getArrow();
-
-                    if (isPaperMC) {
-                        try {
-                            if ((boolean) isTicking.invoke(arrow)) {
-                                ta.tick();
-                            }
-                        } catch (IllegalAccessException | InvocationTargetException e) {
-                            Log.error(e);
-                            isPaperMC = false;
-                        }
-                    }
-                    if (!isPaperMC) {
-                        Location lo = arrow.getLocation();
-                        World wo = arrow.getWorld();
-
-                        if (lo.isWorldLoaded() && wo.isChunkLoaded((int) Math.round(lo.getX()), (int) Math.round(lo.getZ())))
-                            if (wo.getChunkAt(lo).isEntitiesLoaded())
-                                ta.tick();
-                    }
-                }
-            }
-        }.runTaskTimer(this, 0L, 1L);
+        TickArrowManager.start(this);
 
         for (World world : Bukkit.getWorlds())
             for (Chunk chunk : world.getLoadedChunks())
@@ -112,7 +57,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        ABUtil.removeRecipe(false);
+        recipeManager.removeRecipe(false);
         TickArrowManager.unload();
     }
 
@@ -139,9 +84,9 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
             config.reloadConfig();
 
             if (config.isEnableCraft()) {
-                ABUtil.addRecipe();
+                recipeManager.addRecipe();
             } else {
-                ABUtil.removeRecipe(false);
+                recipeManager.removeRecipe(false);
             }
 
             Log.infoSenders("[" + ChatColor.GREEN + "Archangel's Bow" + ChatColor.RESET + "] "
@@ -150,10 +95,6 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         }
 
         return false;
-    }
-
-    public void onHitArrow(EntityDamageByEntityEvent e) {
-        //TODO
     }
 
     public void onSetBowInAnvil(PrepareAnvilEvent e) {

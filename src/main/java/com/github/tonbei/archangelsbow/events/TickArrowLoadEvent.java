@@ -19,8 +19,8 @@ public class TickArrowLoadEvent implements Listener {
         for (Entity entity : e.getEntities())
             if (ABUtil.isHomingArrow(entity))
                 TickArrowManager.register(new HomingArrow((Arrow) entity,
-                                            ArchangelsBow.getInstance().getABConfig().getStartHomingTick(),
-                                            ArchangelsBow.getInstance().getABConfig().getSearchRange()));
+                                            ArchangelsBow.getABConfig().getStartHomingTick(),
+                                            ArchangelsBow.getABConfig().getSearchRange()));
     }
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)

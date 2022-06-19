@@ -1,11 +1,11 @@
 package com.github.tonbei.archangelsbow;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -14,11 +14,12 @@ public class Log {
     private static Logger logger = Bukkit.getLogger();
 
     static void setLogger(@NotNull Logger l) {
-        logger = Objects.requireNonNull(l);
+        Validate.notNull(l, "Logger must not be null.");
+        logger = l;
     }
 
     public static void debug(String s) {
-        if (ArchangelsBow.getInstance().getABConfig().isDebug())
+        if (ArchangelsBow.getABConfig().isDebug())
             logger.log(Level.INFO, s);
     }
 

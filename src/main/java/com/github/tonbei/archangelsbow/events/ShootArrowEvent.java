@@ -75,9 +75,7 @@ public class ShootArrowEvent implements Listener {
             //TODO 発射時の弓のレベルを格納
             arrow.getPersistentDataContainer().set(ABUtil.getHoming(), PersistentDataType.INTEGER,
                     bow.getItemMeta().getPersistentDataContainer().getOrDefault(ABUtil.getBlessing(), PersistentDataType.INTEGER, 0));
-            TickArrowManager.register(new HomingArrow(arrow,
-                    ArchangelsBow.getInstance().getABConfig().getStartHomingTick(),
-                    ArchangelsBow.getInstance().getABConfig().getSearchRange()));
+            TickArrowManager.register(new HomingArrow(arrow, ArchangelsBow.getABConfig().getStartHomingTick(), ArchangelsBow.getABConfig().getSearchRange()));
 
             entity.getWorld().playSound(entity.getLocation(), Sound.ENTITY_ARROW_SHOOT, SoundCategory.PLAYERS, 1.0F, 1.0F / (random.nextFloat() * 0.4F + 1.2F));
         }
