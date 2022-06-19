@@ -1,9 +1,9 @@
-package com.github.tonbei.archangelsbow.events;
+package com.github.tonbei.archangelsbow.listener;
 
 import com.github.tonbei.archangelsbow.util.ABUtil;
 import com.github.tonbei.archangelsbow.ArchangelsBow;
 import com.github.tonbei.archangelsbow.util.Log;
-import com.github.tonbei.archangelsbow.entity.HomingArrow;
+import com.github.tonbei.archangelsbow.arrow.HomingArrow;
 import com.github.tonbei.archangelsbow.manager.TickArrowManager;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -26,7 +26,7 @@ import org.bukkit.util.Vector;
 
 import java.util.Random;
 
-public class ShootArrowEvent implements Listener {
+public class ShootArrowListener implements Listener {
 
     private final Random random = new Random();
 

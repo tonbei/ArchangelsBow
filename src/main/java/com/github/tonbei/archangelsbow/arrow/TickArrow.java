@@ -1,4 +1,4 @@
-package com.github.tonbei.archangelsbow.entity;
+package com.github.tonbei.archangelsbow.arrow;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.entity.Arrow;

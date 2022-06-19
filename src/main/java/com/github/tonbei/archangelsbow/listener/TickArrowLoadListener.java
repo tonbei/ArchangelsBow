@@ -1,8 +1,8 @@
-package com.github.tonbei.archangelsbow.events;
+package com.github.tonbei.archangelsbow.listener;
 
 import com.github.tonbei.archangelsbow.util.ABUtil;
 import com.github.tonbei.archangelsbow.ArchangelsBow;
-import com.github.tonbei.archangelsbow.entity.HomingArrow;
+import com.github.tonbei.archangelsbow.arrow.HomingArrow;
 import com.github.tonbei.archangelsbow.manager.TickArrowManager;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
@@ -12,7 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.world.EntitiesLoadEvent;
 import org.bukkit.event.world.EntitiesUnloadEvent;
 
-public class TickArrowLoadEvent implements Listener {
+public class TickArrowLoadListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
     public void onEntitiesLoad(EntitiesLoadEvent e) {

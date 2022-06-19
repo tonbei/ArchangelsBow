@@ -1,9 +1,10 @@
 package com.github.tonbei.archangelsbow;
 
 import com.github.tonbei.archangelsbow.config.ABConfig;
-import com.github.tonbei.archangelsbow.entity.HomingArrow;
-import com.github.tonbei.archangelsbow.events.ShootArrowEvent;
-import com.github.tonbei.archangelsbow.events.TickArrowLoadEvent;
+import com.github.tonbei.archangelsbow.arrow.HomingArrow;
+import com.github.tonbei.archangelsbow.listener.ABInventoryListener;
+import com.github.tonbei.archangelsbow.listener.ShootArrowListener;
+import com.github.tonbei.archangelsbow.listener.TickArrowLoadListener;
 import com.github.tonbei.archangelsbow.manager.ABRecipeManager;
 import com.github.tonbei.archangelsbow.manager.TickArrowManager;
 import com.github.tonbei.archangelsbow.util.ABUtil;
@@ -18,8 +19,6 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
-import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class ArchangelsBow extends JavaPlugin implements Listener {
@@ -39,8 +38,9 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        this.getServer().getPluginManager().registerEvents(new TickArrowLoadEvent(), this);
-        this.getServer().getPluginManager().registerEvents(new ShootArrowEvent(), this);
+        this.getServer().getPluginManager().registerEvents(new TickArrowLoadListener(), this);
+        this.getServer().getPluginManager().registerEvents(new ShootArrowListener(), this);
+        this.getServer().getPluginManager().registerEvents(new ABInventoryListener(), this);
 
         INSTANCE = this;
         Log.setLogger(this.getLogger());
@@ -98,13 +98,5 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         }
 
         return false;
-    }
-
-    public void onSetBowInAnvil(PrepareAnvilEvent e) {
-        //TODO
-    }
-
-    public void onSetBowInEnchantTable(PrepareItemEnchantEvent e) {
-        //TODO
     }
 }

@@ -4,7 +4,7 @@
  *
  *  Original Source : https://github.com/sinkillerj/ProjectE/blob/mc1.16.x/src/main/java/moze_intel/projecte/gameObjs/entity/EntityHomingArrow.java
  */
-package com.github.tonbei.archangelsbow.entity;
+package com.github.tonbei.archangelsbow.arrow;
 
 import com.github.tonbei.archangelsbow.util.Log;
 import org.bukkit.Location;
@@ -86,7 +86,7 @@ public class HomingArrow extends TickArrow {
 
                 Vector adjustedLookVec = transform(crossProduct, theta, arrowMotion);
 
-                shoot(adjustedLookVec.getX(), adjustedLookVec.getY(), adjustedLookVec.getZ(), 1.0F, 0.0F);
+                shoot(adjustedLookVec.getX(), adjustedLookVec.getY(), adjustedLookVec.getZ(), 3.0F, 0.0F);
 
                 Log.debug("HomingArrow's rotation has been adjusted. / " + adjustedLookVec + " / " + adjustedLookVec.length());
             }
