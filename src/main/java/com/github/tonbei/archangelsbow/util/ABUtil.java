@@ -1,4 +1,4 @@
-package com.github.tonbei.archangelsbow;
+package com.github.tonbei.archangelsbow.util;
 
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;

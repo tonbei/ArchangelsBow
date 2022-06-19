@@ -1,5 +1,6 @@
-package com.github.tonbei.archangelsbow;
+package com.github.tonbei.archangelsbow.util;
 
+import com.github.tonbei.archangelsbow.ArchangelsBow;
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -13,7 +14,7 @@ public class Log {
 
     private static Logger logger = Bukkit.getLogger();
 
-    static void setLogger(@NotNull Logger l) {
+    public static void setLogger(@NotNull Logger l) {
         Validate.notNull(l, "Logger must not be null.");
         logger = l;
     }

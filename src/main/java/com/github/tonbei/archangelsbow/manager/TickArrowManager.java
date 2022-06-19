@@ -1,7 +1,7 @@
 package com.github.tonbei.archangelsbow.manager;
 
 import com.github.tonbei.archangelsbow.ArchangelsBow;
-import com.github.tonbei.archangelsbow.Log;
+import com.github.tonbei.archangelsbow.util.Log;
 import com.github.tonbei.archangelsbow.entity.TickArrow;
 import com.github.tonbei.archangelsbow.manager.task.TickArrowTask;
 import org.apache.commons.lang.Validate;

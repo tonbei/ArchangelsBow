@@ -1,6 +1,6 @@
 package com.github.tonbei.archangelsbow.events;
 
-import com.github.tonbei.archangelsbow.ABUtil;
+import com.github.tonbei.archangelsbow.util.ABUtil;
 import com.github.tonbei.archangelsbow.ArchangelsBow;
 import com.github.tonbei.archangelsbow.entity.HomingArrow;
 import com.github.tonbei.archangelsbow.manager.TickArrowManager;

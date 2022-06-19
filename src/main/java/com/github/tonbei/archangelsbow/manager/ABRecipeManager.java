@@ -1,8 +1,8 @@
 package com.github.tonbei.archangelsbow.manager;
 
-import com.github.tonbei.archangelsbow.ABUtil;
+import com.github.tonbei.archangelsbow.util.ABUtil;
 import com.github.tonbei.archangelsbow.ArchangelsBow;
-import com.github.tonbei.archangelsbow.Log;
+import com.github.tonbei.archangelsbow.util.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;

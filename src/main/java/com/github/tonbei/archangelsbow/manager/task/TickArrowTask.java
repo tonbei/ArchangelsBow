@@ -1,6 +1,6 @@
 package com.github.tonbei.archangelsbow.manager.task;
 
-import com.github.tonbei.archangelsbow.Log;
+import com.github.tonbei.archangelsbow.util.Log;
 import com.github.tonbei.archangelsbow.entity.TickArrow;
 import com.github.tonbei.archangelsbow.manager.TickArrowManager;
 import org.bukkit.Location;

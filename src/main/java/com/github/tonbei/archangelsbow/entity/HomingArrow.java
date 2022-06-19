@@ -6,7 +6,7 @@
  */
 package com.github.tonbei.archangelsbow.entity;
 
-import com.github.tonbei.archangelsbow.Log;
+import com.github.tonbei.archangelsbow.util.Log;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.AbstractArrow;

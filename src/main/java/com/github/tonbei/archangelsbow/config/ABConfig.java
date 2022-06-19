@@ -1,5 +1,6 @@
-package com.github.tonbei.archangelsbow;
+package com.github.tonbei.archangelsbow.config;
 
+import com.github.tonbei.archangelsbow.ArchangelsBow;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class ABConfig {
