@@ -7,10 +7,12 @@
 package com.github.tonbei.archangelsbow.arrow;
 
 import com.github.tonbei.archangelsbow.util.Log;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.AbstractArrow;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.EnderDragon;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -21,6 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class HomingArrow extends TickArrow {
@@ -28,6 +31,7 @@ public class HomingArrow extends TickArrow {
     private final int startHomingTick;
     private final double searchRange;
 
+    private UUID shooter = null;
     private LivingEntity target;
     private int newTargetCooldown = 0;
 
@@ -41,6 +45,11 @@ public class HomingArrow extends TickArrow {
 
         this.startHomingTick = startHomingTick;
         this.searchRange = searchRange;
+    }
+
+    public HomingArrow(@NotNull Arrow arrow, int startHomingTick, double searchRange, @NotNull Player player) {
+        this(arrow, startHomingTick, searchRange);
+        this.shooter = player.getUniqueId();
     }
 
     @Override
@@ -88,7 +97,7 @@ public class HomingArrow extends TickArrow {
 
                 shoot(adjustedLookVec.getX(), adjustedLookVec.getY(), adjustedLookVec.getZ(), 3.0F, 0.0F);
 
-                Log.debug("HomingArrow's rotation has been adjusted. / " + adjustedLookVec + " / " + adjustedLookVec.length());
+                //Log.debug("HomingArrow's rotation has been adjusted. / " + adjustedLookVec + " / " + adjustedLookVec.length());
             }
         }
 
@@ -125,6 +134,10 @@ public class HomingArrow extends TickArrow {
         if (!livingEntities.isEmpty()) {
             livingEntities.sort(Comparator.comparing(HomingArrow.this::sqrDistance, Double::compare));
             target = livingEntities.get(0);
+            if (target instanceof EnderDragon) {
+                target.setMaximumNoDamageTicks(0);
+                this.getArrow().setShooter(shooter == null ? null : Bukkit.getPlayer(shooter));
+            }
             Log.debug("Target Entity : " + target.toString());
         }
 
