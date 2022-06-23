@@ -15,6 +15,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Tameable;
+import org.bukkit.entity.Villager;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +31,7 @@ public class HomingArrow extends TickArrow {
 
     private LivingEntity target;
     private int newTargetCooldown = 0;
+    private boolean isDead = false;
 
     public HomingArrow(@NotNull Arrow arrow, int startHomingTick, double searchRange) {
         super(arrow);
@@ -47,19 +49,26 @@ public class HomingArrow extends TickArrow {
     public void tick() {
         Arrow arrow = this.getArrow();
 
+        if (arrow.isOnGround()) {
+            isDead = true;
+            arrow.remove();
+            Log.debug("Arrow is dead.");
+            return;
+        }
+
         if (arrow.getTicksLived() >= startHomingTick) {
-            if (hasTarget() && (target.isDead() || arrow.isOnGround())) {
+            if (hasTarget() && target.isDead()) {
                 target = null;
-                Log.debug("Target/Arrow is dead.");
+                Log.debug("Target is dead.");
             }
 
-            if (!hasTarget() && !arrow.isOnGround() && newTargetCooldown <= 0) {
+            if (!hasTarget() && newTargetCooldown <= 0) {
                 findNewTarget();
             } else {
                 newTargetCooldown--;
             }
 
-            if (hasTarget() && !arrow.isOnGround()) {
+            if (hasTarget()) {
                 Vector velocity = arrow.getVelocity();
                 double mX = velocity.getX();
                 double mY = velocity.getY();
@@ -88,11 +97,11 @@ public class HomingArrow extends TickArrow {
 
                 shoot(adjustedLookVec.getX(), adjustedLookVec.getY(), adjustedLookVec.getZ(), 3.0F, 0.0F);
 
-                Log.debug("HomingArrow's rotation has been adjusted. / " + adjustedLookVec + " / " + adjustedLookVec.length());
+                //Log.debug("HomingArrow's rotation has been adjusted. / " + adjustedLookVec + " / " + adjustedLookVec.length());
             }
         }
 
-        if (!hasTarget() && !arrow.isOnGround() && arrow.isInWater()) {
+        if (!hasTarget() && arrow.isInWater()) {
             Vector velocity = arrow.getVelocity();
             velocity.add(new Vector(0, 0.05F, 0)).multiply(1.65F).subtract(new Vector(0, 0.05F, 0));
             arrow.setVelocity(velocity);
@@ -101,7 +110,7 @@ public class HomingArrow extends TickArrow {
 
     @Override
     public boolean isActive() {
-        return !this.getArrow().isDead();
+        return !this.getArrow().isDead() && !isDead;
     }
 
     @Nullable
@@ -118,6 +127,7 @@ public class HomingArrow extends TickArrow {
         List<LivingEntity> livingEntities = entities.stream()
                                                     .filter(e -> e instanceof LivingEntity
                                                             && !(e instanceof Player)
+                                                            && !(e instanceof Villager)
                                                             && !(e instanceof Tameable && ((Tameable) e).isTamed()))
                                                     .map(e -> (LivingEntity) e)
                                                     .collect(Collectors.toList());

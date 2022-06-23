@@ -3,6 +3,7 @@ package com.github.tonbei.archangelsbow;
 import com.github.tonbei.archangelsbow.config.ABConfig;
 import com.github.tonbei.archangelsbow.arrow.HomingArrow;
 import com.github.tonbei.archangelsbow.listener.ABInventoryListener;
+import com.github.tonbei.archangelsbow.listener.HitTickArrowListener;
 import com.github.tonbei.archangelsbow.listener.ShootArrowListener;
 import com.github.tonbei.archangelsbow.listener.TickArrowLoadListener;
 import com.github.tonbei.archangelsbow.manager.ABRecipeManager;
@@ -19,6 +20,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class ArchangelsBow extends JavaPlugin implements Listener {
@@ -38,15 +40,17 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        this.getServer().getPluginManager().registerEvents(new TickArrowLoadListener(), this);
-        this.getServer().getPluginManager().registerEvents(new ShootArrowListener(), this);
-        this.getServer().getPluginManager().registerEvents(new ABInventoryListener(), this);
-
         INSTANCE = this;
         Log.setLogger(this.getLogger());
         config = new ABConfig(this);
         recipeManager = new ABRecipeManager(this);
         if (config.isEnableCraft()) recipeManager.addRecipe();
+
+        PluginManager pluginManager = this.getServer().getPluginManager();
+        pluginManager.registerEvents(new TickArrowLoadListener(), this);
+        pluginManager.registerEvents(new ShootArrowListener(), this);
+        pluginManager.registerEvents(new ABInventoryListener(), this);
+        pluginManager.registerEvents(new HitTickArrowListener(), this);
 
         TickArrowManager.start(this);
 

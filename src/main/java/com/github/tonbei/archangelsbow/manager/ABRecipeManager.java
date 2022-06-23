@@ -57,12 +57,12 @@ public class ABRecipeManager {
         ShapedRecipe recipe = new ShapedRecipe(recipeKeys.get(level - 1), ABUtil.getArchangelsBow(level));
         switch (level) {
             case 1:
-                recipe.shape("FTF", "MBI", "CSC")
-                        .setIngredient('F', Material.FEATHER)
+                recipe.shape("XTX", "MBI", "CSC")
+                        .setIngredient('X', Material.EXPERIENCE_BOTTLE)
                         .setIngredient('T', Material.TRIDENT)
                         .setIngredient('M', new RecipeChoice.ExactChoice(ABUtil.getEnchantedBook(Enchantment.MENDING, 1, false)))
                         .setIngredient('B', Material.BOW)
-                        .setIngredient('I', new RecipeChoice.ExactChoice(ABUtil.getEnchantedBook(Enchantment.ARROW_INFINITE, 1, false)))
+                        .setIngredient('I', new RecipeChoice.ExactChoice(ABUtil.getEnchantedBook(Enchantment.LOYALTY, 1, false)))
                         .setIngredient('C', Material.END_CRYSTAL)
                         .setIngredient('S', Material.NETHER_STAR);
                 break;
