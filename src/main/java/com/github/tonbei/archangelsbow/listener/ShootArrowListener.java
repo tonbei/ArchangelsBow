@@ -4,6 +4,8 @@ import com.github.tonbei.archangelsbow.util.ABUtil;
 import com.github.tonbei.archangelsbow.ArchangelsBow;
 import com.github.tonbei.archangelsbow.arrow.HomingArrow;
 import com.github.tonbei.archangelsbow.manager.TickArrowManager;
+import com.github.tonbei.archangelsbow.util.ExpUtil;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
@@ -28,6 +30,7 @@ public class ShootArrowListener implements Listener {
     @EventHandler(priority = EventPriority.NORMAL)
     public void onBowClick(PlayerInteractEvent e) {
         if (!ABUtil.isArchangelsBow(e.getItem())) return;
+        if (e.getPlayer().getGameMode() == GameMode.SPECTATOR) return;
 
         Action action = e.getAction();
         if (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) {
@@ -48,7 +51,11 @@ public class ShootArrowListener implements Listener {
         float y = (float) -Math.sin(xRot * ((float)Math.PI / 180F));
         float z = (float) (Math.cos(yRot * ((float)Math.PI / 180F)) * Math.cos(xRot * ((float)Math.PI / 180F)));
         for (int i = 0; i < Math.max(0, count); i++) {
-            //TODO プレイヤーの経験値チェックの追加
+            if (player.getGameMode() != GameMode.CREATIVE) {
+                int exp = ExpUtil.getExp(player);
+                if (exp <= 0) return;
+                ExpUtil.setExp(player, exp - 1);
+            }
 
             Arrow arrow = player.getWorld().spawnArrow(player.getEyeLocation().subtract(0, 0.1, 0), new Vector(x, y, z), speed, spread);
             arrow.setVelocity(arrow.getVelocity().clone().add(new Vector(vector.getX(), player.isOnGround() ? 0.0D : vector.getY(), vector.getZ())));
