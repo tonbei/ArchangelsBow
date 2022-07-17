@@ -68,7 +68,7 @@ public class ABRecipeManager {
                         .setIngredient('M', new RecipeChoice.ExactChoice(ABUtil.getEnchantedBook(Enchantment.MENDING, 1, false)))
                         .setIngredient('B', Material.BOW)
                         .setIngredient('I', new RecipeChoice.ExactChoice(ABUtil.getEnchantedBook(Enchantment.LOYALTY, 3, false)))
-                        .setIngredient('C', Material.END_CRYSTAL)
+                        .setIngredient('C', new RecipeChoice.ExactChoice(new ItemStack(Material.END_CRYSTAL, 16)))
                         .setIngredient('S', Material.NETHER_STAR);
                 break;
         }
