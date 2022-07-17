@@ -7,23 +7,28 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ABRecipeManager {
 
     private boolean isRecipeRegistered;
-    private final List<NamespacedKey> recipeKeys = new ArrayList<>();
+    public final List<NamespacedKey> recipeKeys;
 
     public ABRecipeManager(ArchangelsBow plugin) {
         isRecipeRegistered = false;
 
+        List<NamespacedKey> tempKeys = new ArrayList<>();
         for (int level = 1; level <= ABUtil.BOW_MAX_LEVEL; level++)
-            recipeKeys.add(new NamespacedKey(plugin, "bow_level_" + level));
+            tempKeys.add(new NamespacedKey(plugin, "bow_level_" + level));
+
+        recipeKeys = Collections.unmodifiableList(tempKeys);
     }
 
     public void addRecipe() {
@@ -58,11 +63,11 @@ public class ABRecipeManager {
         switch (level) {
             case 1:
                 recipe.shape("XTX", "MBI", "CSC")
-                        .setIngredient('X', Material.EXPERIENCE_BOTTLE)
+                        .setIngredient('X', new RecipeChoice.ExactChoice(new ItemStack(Material.EXPERIENCE_BOTTLE, 32)))
                         .setIngredient('T', Material.TRIDENT)
                         .setIngredient('M', new RecipeChoice.ExactChoice(ABUtil.getEnchantedBook(Enchantment.MENDING, 1, false)))
                         .setIngredient('B', Material.BOW)
-                        .setIngredient('I', new RecipeChoice.ExactChoice(ABUtil.getEnchantedBook(Enchantment.LOYALTY, 1, false)))
+                        .setIngredient('I', new RecipeChoice.ExactChoice(ABUtil.getEnchantedBook(Enchantment.LOYALTY, 3, false)))
                         .setIngredient('C', Material.END_CRYSTAL)
                         .setIngredient('S', Material.NETHER_STAR);
                 break;

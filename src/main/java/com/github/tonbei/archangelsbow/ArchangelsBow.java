@@ -2,6 +2,7 @@ package com.github.tonbei.archangelsbow;
 
 import com.github.tonbei.archangelsbow.config.ABConfig;
 import com.github.tonbei.archangelsbow.arrow.HomingArrow;
+import com.github.tonbei.archangelsbow.listener.ABCraftListener;
 import com.github.tonbei.archangelsbow.listener.ABInventoryListener;
 import com.github.tonbei.archangelsbow.listener.HitTickArrowListener;
 import com.github.tonbei.archangelsbow.listener.ShootArrowListener;
@@ -51,6 +52,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new ShootArrowListener(), this);
         pluginManager.registerEvents(new ABInventoryListener(), this);
         pluginManager.registerEvents(new HitTickArrowListener(), this);
+        pluginManager.registerEvents(new ABCraftListener(recipeManager), this);
 
         TickArrowManager.start(this);
 
