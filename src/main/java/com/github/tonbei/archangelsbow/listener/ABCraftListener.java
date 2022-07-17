@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.player.PlayerRecipeDiscoverEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
@@ -42,8 +43,6 @@ public class ABCraftListener implements Listener {
                 boolean cancelFlag = false;
 
                 for (int index = 0; index < 9; index++) {
-                    if (cancelFlag) break;
-
                     ItemStack item = matrix[index];
                     List<ItemStack> itemList = recipeMatrix.get(index);
 
@@ -59,6 +58,8 @@ public class ABCraftListener implements Listener {
                             break;
                         }
                     }
+
+                    if (cancelFlag) break;
                 }
 
                 if (cancelFlag) inv.setResult(null);
@@ -81,8 +82,6 @@ public class ABCraftListener implements Listener {
                 boolean cancelFlag = false;
 
                 for (int index = 0; index < 9; index++) {
-                    if (cancelFlag) break;
-
                     ItemStack item = matrix[index];
                     List<ItemStack> itemList = recipeMatrix.get(index);
 
@@ -108,11 +107,15 @@ public class ABCraftListener implements Listener {
                             break;
                         }
                     }
+
+                    if (cancelFlag) break;
                 }
 
                 if (cancelFlag) {
                     inv.setResult(null);
                 } else {
+                    inv.setMatrix(new ItemStack[9]);
+
                     new BukkitRunnable() {
                         @Override
                         public void run() {
@@ -126,7 +129,13 @@ public class ABCraftListener implements Listener {
         }
     }
 
-    public List<List<ItemStack>> getRecipeMatrix(ShapedRecipe recipe) {
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+    public void onDiscoverABRecipe(PlayerRecipeDiscoverEvent e) {
+        if (recipeKeys.stream().anyMatch(e.getRecipe()::equals))
+            e.setCancelled(true);
+    }
+
+    private List<List<ItemStack>> getRecipeMatrix(ShapedRecipe recipe) {
         List<List<ItemStack>> matrix = new ArrayList<>();
         Map<Character, RecipeChoice> recipeChoices = recipe.getChoiceMap();
         for (String row : recipe.getShape()) {
