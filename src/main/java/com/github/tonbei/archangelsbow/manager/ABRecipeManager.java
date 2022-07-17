@@ -13,26 +13,29 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ABRecipeManager {
 
     private boolean isRecipeRegistered;
-    public final List<NamespacedKey> recipeKeys;
+    public final Map<ItemStack, List<List<ItemStack>>> stackRecipeList;
 
     public ABRecipeManager(ArchangelsBow plugin) {
         isRecipeRegistered = false;
 
-        List<NamespacedKey> tempKeys = new ArrayList<>();
+        Map<ItemStack, List<List<ItemStack>>> tempStackRecipe = new HashMap<>();
         for (int level = 1; level <= ABUtil.BOW_MAX_LEVEL; level++)
-            tempKeys.add(new NamespacedKey(plugin, "bow_level_" + level));
+            tempStackRecipe.put(ABUtil.getArchangelsBow(level), getArchangelsBowRecipe(level));
 
-        recipeKeys = Collections.unmodifiableList(tempKeys);
+        stackRecipeList = Collections.unmodifiableMap(tempStackRecipe);
     }
 
     public void addRecipe() {
-        if (isRecipeRegistered) return;
+        /*if (isRecipeRegistered) return;
 
         for (int level = 1; level <= ABUtil.BOW_MAX_LEVEL; level++) {
             if (!Bukkit.addRecipe(getArchangelsBowRecipe(level))) {
@@ -43,35 +46,36 @@ public class ABRecipeManager {
         }
 
         Log.info("Archangel's Bow Recipes are registered.");
-        isRecipeRegistered = true;
+        isRecipeRegistered = true;*/
     }
 
     public void removeRecipe(boolean force) {
-        if (!force && !isRecipeRegistered) return;
+        /*if (!force && !isRecipeRegistered) return;
 
         for (NamespacedKey key : recipeKeys)
             Bukkit.removeRecipe(key);
 
         Log.info("Archangel's Bow Recipes are removed.");
-        isRecipeRegistered = false;
+        isRecipeRegistered = false;*/
     }
 
     @NotNull
-    private ShapedRecipe getArchangelsBowRecipe(int level) {
+    private List<List<ItemStack>> getArchangelsBowRecipe(int level) {
         level = Math.max(1, Math.min(level, ABUtil.BOW_MAX_LEVEL));
-        ShapedRecipe recipe = new ShapedRecipe(recipeKeys.get(level - 1), ABUtil.getArchangelsBow(level));
+        List<List<ItemStack>> recipe = new ArrayList<>();
         switch (level) {
             case 1:
-                recipe.shape("XTX", "MBI", "CSC")
-                        .setIngredient('X', new RecipeChoice.ExactChoice(new ItemStack(Material.EXPERIENCE_BOTTLE, 32)))
-                        .setIngredient('T', Material.TRIDENT)
-                        .setIngredient('M', new RecipeChoice.ExactChoice(ABUtil.getEnchantedBook(Enchantment.MENDING, 1, false)))
-                        .setIngredient('B', Material.BOW)
-                        .setIngredient('I', new RecipeChoice.ExactChoice(ABUtil.getEnchantedBook(Enchantment.LOYALTY, 3, false)))
-                        .setIngredient('C', Material.END_CRYSTAL)
-                        .setIngredient('S', Material.NETHER_STAR);
+                recipe.add(Arrays.asList(new ItemStack(Material.EXPERIENCE_BOTTLE, 32)));
+                recipe.add(Arrays.asList(new ItemStack(Material.TRIDENT)));
+                recipe.add(Arrays.asList(new ItemStack(Material.EXPERIENCE_BOTTLE, 32)));
+                recipe.add(Arrays.asList(ABUtil.getEnchantedBook(Enchantment.MENDING, 1, false)));
+                recipe.add(Arrays.asList(new ItemStack(Material.BOW)));
+                recipe.add(Arrays.asList(ABUtil.getEnchantedBook(Enchantment.LOYALTY, 3, false)));
+                recipe.add(Arrays.asList(new ItemStack(Material.END_CRYSTAL)));
+                recipe.add(Arrays.asList(new ItemStack(Material.NETHER_STAR)));
+                recipe.add(Arrays.asList(new ItemStack(Material.END_CRYSTAL)));
                 break;
         }
-        return recipe;
+        return Collections.unmodifiableList(recipe);
     }
 }
