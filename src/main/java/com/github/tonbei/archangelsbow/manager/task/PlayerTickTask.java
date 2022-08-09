@@ -1,6 +1,5 @@
 package com.github.tonbei.archangelsbow.manager.task;
 
-//import com.comphenix.protocol.utility.MinecraftReflection;
 import com.github.tonbei.archangelsbow.ArchangelsBow;
 import com.github.tonbei.archangelsbow.util.ABUtil;
 import org.bukkit.Bukkit;
@@ -17,39 +16,15 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-//import java.lang.reflect.InvocationTargetException;
-//import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
 public class PlayerTickTask extends BukkitRunnable {
 
-//    private Method getHandleMethod;
-//    private Method setOnGroundMethod;
-
     private static final String AB_FLY_META_KEY = "ArchangelsBow:Fly";
     private static final AttributeModifier FLUID_SPEED_BOOST = new AttributeModifier(UUID.fromString("e29dde3a-3aab-a9f8-7f6a-5bbb7b4c4d25"), "Walk on water/lava speed boost", 0.15, AttributeModifier.Operation.ADD_NUMBER);
     private static final List<Material> liquidBlocks = Arrays.asList(Material.WATER, Material.LAVA, Material.BUBBLE_COLUMN, Material.KELP, Material.KELP_PLANT, Material.SEAGRASS, Material.TALL_SEAGRASS);
-
-    public PlayerTickTask() {
-//        try {
-//            Class<?> craftEntity = MinecraftReflection.getCraftEntityClass();
-//            getHandleMethod = craftEntity.getMethod("getHandle");
-//            Class<?> entity = MinecraftReflection.getEntityClass();
-//            setOnGroundMethod = entity.getMethod("setOnGround", boolean.class);
-//        } catch (NoSuchMethodException e) {
-//            e.printStackTrace();
-//        }
-    }
-
-//    private void setOnGround(Player player, boolean onGround) {
-//        try {
-//            setOnGroundMethod.invoke(getHandleMethod.invoke(player), onGround);
-//        } catch (IllegalAccessException | InvocationTargetException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     @Override
     public void run() {
@@ -69,7 +44,6 @@ public class PlayerTickTask extends BukkitRunnable {
                             }
 
                             player.setFallDistance(0.0F);
-                            //setOnGround(player, true);
                             setFlyFlag = true;
                         }
                         applySpeed = true;
