@@ -136,7 +136,7 @@ public class ABCraftListener implements Listener {
     }
 
     private List<List<ItemStack>> getRecipeMatrix(ShapedRecipe recipe) {
-        List<List<ItemStack>> matrix = new ArrayList<>();
+        List<List<ItemStack>> matrix = new ArrayList<>(9);
         Map<Character, RecipeChoice> recipeChoices = recipe.getChoiceMap();
         for (String row : recipe.getShape()) {
             for (Character c : row.toCharArray()) {

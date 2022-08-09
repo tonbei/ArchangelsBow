@@ -4,6 +4,7 @@ main: com.github.tonbei.archangelsbow.ArchangelsBow
 api-version: 1.17
 prefix: Archangel's Bow
 authors: [ tonbei10 ]
+depend: [ ProtocolLib ]
 description: Reborn of The Archangel's Smite
 
 commands:
