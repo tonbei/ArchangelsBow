@@ -90,7 +90,7 @@ public class HitTickArrowListener implements Listener {
             }
             if (entity instanceof PigZombie) {
                 Player player = (Player) e.getTarget();
-                if (Arrays.stream(player.getInventory().getStorageContents()).anyMatch(ABUtil::isArchangelsBow)) {
+                if (Arrays.stream(player.getInventory().getContents()).anyMatch(ABUtil::isArchangelsBow)) {
                     e.setCancelled(true);
                 }
             }

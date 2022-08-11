@@ -20,10 +20,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-public class PlayerTickTask extends BukkitRunnable {
+public class PlayerOnLiquidTask extends BukkitRunnable {
 
     private static final String AB_FLY_META_KEY = "ArchangelsBow:Fly";
-    private static final AttributeModifier FLUID_SPEED_BOOST = new AttributeModifier(UUID.fromString("e29dde3a-3aab-a9f8-7f6a-5bbb7b4c4d25"), "Walk on water/lava speed boost", 0.15, AttributeModifier.Operation.ADD_NUMBER);
+    private static final AttributeModifier FLUID_SPEED_BOOST = new AttributeModifier(UUID.fromString("e29dde3a-3aab-a9f8-7f6a-5bbb7b4c4d25"), "Walk on water/lava speed boost", 0.075, AttributeModifier.Operation.ADD_NUMBER);
     private static final List<Material> liquidBlocks = Arrays.asList(Material.WATER, Material.LAVA, Material.BUBBLE_COLUMN, Material.KELP, Material.KELP_PLANT, Material.SEAGRASS, Material.TALL_SEAGRASS);
 
     @Override
@@ -32,7 +32,7 @@ public class PlayerTickTask extends BukkitRunnable {
             boolean applySpeed = false;
             boolean setFlyFlag = false;
 
-            if (player.getGameMode() != GameMode.SPECTATOR && Arrays.stream(player.getInventory().getStorageContents()).anyMatch(ABUtil::isArchangelsBow)) {
+            if (player.getGameMode() != GameMode.SPECTATOR && Arrays.stream(player.getInventory().getContents()).anyMatch(ABUtil::isArchangelsBow)) {
                 Location location = player.getLocation().toBlockLocation();
                 Block block = location.getBlock();
                 Block below = player.getLocation().add(0.0, -0.35, 0.0).toBlockLocation().getBlock();

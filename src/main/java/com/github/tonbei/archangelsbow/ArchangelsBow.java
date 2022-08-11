@@ -9,7 +9,8 @@ import com.github.tonbei.archangelsbow.listener.ShootArrowListener;
 import com.github.tonbei.archangelsbow.listener.TickArrowLoadListener;
 import com.github.tonbei.archangelsbow.manager.ABRecipeManager;
 import com.github.tonbei.archangelsbow.manager.TickArrowManager;
-import com.github.tonbei.archangelsbow.manager.task.PlayerTickTask;
+import com.github.tonbei.archangelsbow.manager.task.PlayerFlyTask;
+import com.github.tonbei.archangelsbow.manager.task.PlayerOnLiquidTask;
 import com.github.tonbei.archangelsbow.util.ABUtil;
 import com.github.tonbei.archangelsbow.util.Log;
 import org.bukkit.Bukkit;
@@ -56,7 +57,8 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new ABCraftListener(recipeManager), this);
 
         TickArrowManager.start(this);
-        new PlayerTickTask().runTaskTimer(this, 0L, 1L);
+        new PlayerOnLiquidTask().runTaskTimer(this, 0L, 1L);
+        new PlayerFlyTask().runTaskTimer(this, 0L, 1L);
 
         for (World world : Bukkit.getWorlds())
             for (Chunk chunk : world.getLoadedChunks())
