@@ -1,5 +1,6 @@
 package com.github.tonbei.archangelsbow;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.github.tonbei.archangelsbow.config.ABConfig;
 import com.github.tonbei.archangelsbow.arrow.HomingArrow;
 import com.github.tonbei.archangelsbow.listener.ABCraftListener;
@@ -12,6 +13,7 @@ import com.github.tonbei.archangelsbow.manager.ABRecipeManager;
 import com.github.tonbei.archangelsbow.manager.TickArrowManager;
 import com.github.tonbei.archangelsbow.manager.task.PlayerFlyTask;
 import com.github.tonbei.archangelsbow.manager.task.PlayerOnLiquidTask;
+import com.github.tonbei.archangelsbow.packet.GlidingInventoryPacketListener;
 import com.github.tonbei.archangelsbow.util.ABUtil;
 import com.github.tonbei.archangelsbow.util.Log;
 import org.bukkit.Bukkit;
@@ -57,6 +59,8 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new HitTickArrowListener(), this);
         pluginManager.registerEvents(new ABCraftListener(recipeManager), this);
         pluginManager.registerEvents(new PlayerGlideListener(), this);
+
+        ProtocolLibrary.getProtocolManager().addPacketListener(new GlidingInventoryPacketListener(this));
 
         TickArrowManager.start(this);
         new PlayerOnLiquidTask().runTaskTimer(this, 0L, 1L);
