@@ -1,6 +1,7 @@
 package com.github.tonbei.archangelsbow.manager.task;
 
 import com.github.tonbei.archangelsbow.ArchangelsBow;
+import com.github.tonbei.archangelsbow.manager.PlayerFlyManager;
 import com.github.tonbei.archangelsbow.util.ABUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -67,7 +68,7 @@ public class PlayerOnLiquidTask extends BukkitRunnable {
             }
 
             if (setFlyFlag) {
-                if (!player.hasMetadata(AB_FLY_META_KEY) || !player.getAllowFlight()) {
+                if (!player.hasMetadata(AB_FLY_META_KEY) || !player.isFlying()) {
                     player.setMetadata(AB_FLY_META_KEY, new FixedMetadataValue(ArchangelsBow.getInstance(), true));
                     player.setAllowFlight(true);
                     player.setFlying(true);
@@ -78,6 +79,7 @@ public class PlayerOnLiquidTask extends BukkitRunnable {
                     player.setFlying(false);
                     if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
                         player.setAllowFlight(false);
+                        PlayerFlyManager.add(player);
                     }
                 }
             }

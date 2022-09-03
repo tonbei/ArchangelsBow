@@ -2,6 +2,7 @@ package com.github.tonbei.archangelsbow.listener;
 
 import com.github.tonbei.archangelsbow.ArchangelsBow;
 import com.github.tonbei.archangelsbow.manager.ABRecipeManager;
+import com.github.tonbei.archangelsbow.manager.TickTaskManager;
 import org.bukkit.NamespacedKey;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -115,14 +116,7 @@ public class ABCraftListener implements Listener {
                     inv.setResult(null);
                 } else {
                     inv.setMatrix(new ItemStack[9]);
-
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            inv.setMatrix(afterMatrix);
-                        }
-                    }.runTask(ArchangelsBow.getInstance());
-
+                    TickTaskManager.register(() -> inv.setMatrix(afterMatrix));
                     inv.setResult(recipe.getResult());
                 }
             }

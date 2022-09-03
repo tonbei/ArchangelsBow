@@ -37,7 +37,7 @@ public class GlidingInventoryPacketListener extends PacketAdapter {
 
         if (!player.hasMetadata(PlayerGlideListener.AB_GLIDE_META_KEY)) return;
 
-        if (packetType == PacketType.Play.Client.WINDOW_CLICK) {
+        if (packetType == PacketType.Play.Client.WINDOW_CLICK) { //TODO InventoryClickEvent
             if (packet.getIntegers().read(0) == 0) { //Window ID : 0 = player inventory
                 if (packet.getIntegers().read(2) == 6) { //Clicked Slot Number : 6 = Chestplate Slot
                     //Map of slots to be changed : <Slot Number, ItemStack after change>
@@ -55,7 +55,7 @@ public class GlidingInventoryPacketListener extends PacketAdapter {
                     }
                 }
             }
-        } else if (packetType == PacketType.Play.Client.SET_CREATIVE_SLOT) {
+        } else if (packetType == PacketType.Play.Client.SET_CREATIVE_SLOT) { //TODO InventoryCreativeEvent
             if (packet.getIntegers().read(0) == 6) { //Clicked Slot Number : 6 = Chestplate Slot
                 ItemStack setItem = packet.getItemModifier().read(0); //Clicked Item
                 if (setItem != null) {

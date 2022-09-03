@@ -6,14 +6,17 @@ import com.github.tonbei.archangelsbow.arrow.HomingArrow;
 import com.github.tonbei.archangelsbow.listener.ABCraftListener;
 import com.github.tonbei.archangelsbow.listener.ABInventoryListener;
 import com.github.tonbei.archangelsbow.listener.HitTickArrowListener;
+import com.github.tonbei.archangelsbow.listener.PlayerFlyListener;
 import com.github.tonbei.archangelsbow.listener.PlayerGlideListener;
+import com.github.tonbei.archangelsbow.listener.ServerTickEndListener;
 import com.github.tonbei.archangelsbow.listener.ShootArrowListener;
 import com.github.tonbei.archangelsbow.listener.TickArrowLoadListener;
 import com.github.tonbei.archangelsbow.manager.ABRecipeManager;
+import com.github.tonbei.archangelsbow.manager.PlayerFlyManager;
 import com.github.tonbei.archangelsbow.manager.TickArrowManager;
-import com.github.tonbei.archangelsbow.manager.task.PlayerFlyTask;
-import com.github.tonbei.archangelsbow.manager.task.PlayerOnLiquidTask;
+import com.github.tonbei.archangelsbow.manager.TickTaskManager;
 import com.github.tonbei.archangelsbow.packet.GlidingInventoryPacketListener;
+import com.github.tonbei.archangelsbow.packet.PlayerFlyPacketListener;
 import com.github.tonbei.archangelsbow.util.ABUtil;
 import com.github.tonbei.archangelsbow.util.Log;
 import org.bukkit.Bukkit;
@@ -59,12 +62,13 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new HitTickArrowListener(), this);
         pluginManager.registerEvents(new ABCraftListener(recipeManager), this);
         pluginManager.registerEvents(new PlayerGlideListener(), this);
+        pluginManager.registerEvents(new PlayerFlyListener(), this);
+        pluginManager.registerEvents(new ServerTickEndListener(), this);
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new GlidingInventoryPacketListener(this));
+        ProtocolLibrary.getProtocolManager().addPacketListener(new PlayerFlyPacketListener(this));
 
-        TickArrowManager.start(this);
-        new PlayerOnLiquidTask().runTaskTimer(this, 0L, 1L);
-        new PlayerFlyTask().runTaskTimer(this, 0L, 1L);
+        TickTaskManager.init(this);
 
         for (World world : Bukkit.getWorlds())
             for (Chunk chunk : world.getLoadedChunks())
@@ -77,7 +81,9 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         recipeManager.removeRecipe(false);
-        TickArrowManager.unload();
+        TickArrowManager.clear();
+        TickTaskManager.clear();
+        PlayerFlyManager.clear();
     }
 
     @Override

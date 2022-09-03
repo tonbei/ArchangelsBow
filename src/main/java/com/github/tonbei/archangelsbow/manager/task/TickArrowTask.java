@@ -4,13 +4,12 @@ import com.github.tonbei.archangelsbow.util.Log;
 import com.github.tonbei.archangelsbow.arrow.TickArrow;
 import com.github.tonbei.archangelsbow.manager.TickArrowManager;
 import org.bukkit.entity.Arrow;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 
-public class TickArrowTask extends BukkitRunnable {
+public class TickArrowTask implements Runnable {
 
     @Override
     public void run() {
