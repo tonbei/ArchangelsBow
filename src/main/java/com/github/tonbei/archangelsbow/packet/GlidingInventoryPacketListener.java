@@ -11,7 +11,6 @@ import com.github.tonbei.archangelsbow.ArchangelsBow;
 import com.github.tonbei.archangelsbow.listener.PlayerGlideListener;
 import com.github.tonbei.archangelsbow.util.ABUtil;
 import com.github.tonbei.archangelsbow.util.PacketUtil;
-import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -35,7 +34,7 @@ public class GlidingInventoryPacketListener extends PacketAdapter {
 
         if (!player.hasMetadata(PlayerGlideListener.AB_GLIDE_META_KEY)) return;
 
-        if (packetType == PacketType.Play.Client.SET_CREATIVE_SLOT) { //TODO InventoryCreativeEvent
+        if (packetType == PacketType.Play.Client.SET_CREATIVE_SLOT) {
             if (packet.getIntegers().read(0) == 6) { //Clicked Slot Number : 6 = Chestplate Slot
                 ItemStack setItem = packet.getItemModifier().read(0); //Clicked Item
                 if (setItem != null) {
