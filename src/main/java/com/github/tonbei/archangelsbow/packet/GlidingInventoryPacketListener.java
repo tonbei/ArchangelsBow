@@ -12,6 +12,7 @@ import com.comphenix.protocol.wrappers.Pair;
 import com.destroystokyo.paper.MaterialTags;
 import com.github.tonbei.archangelsbow.ArchangelsBow;
 import com.github.tonbei.archangelsbow.listener.PlayerGlideListener;
+import com.github.tonbei.archangelsbow.util.PacketUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -50,7 +51,7 @@ public class GlidingInventoryPacketListener extends PacketAdapter {
                         InventoryClickType clickType = packet.getEnumModifier(InventoryClickType.class, 4).read(0);
 
                         if (clickType == InventoryClickType.SWAP || clickType == InventoryClickType.THROW || clickType == InventoryClickType.QUICK_MOVE) {
-                            PlayerGlideListener.sendEquipmentPacket(player, new ItemStack(Material.ELYTRA), Collections.singletonList(player)); //TODO SET_SLOT
+                            PacketUtil.sendEquipmentPacket(player, new ItemStack(Material.ELYTRA), Collections.singletonList(player)); //TODO SET_SLOT
                         }
                     }
                 }
@@ -62,7 +63,7 @@ public class GlidingInventoryPacketListener extends PacketAdapter {
                     if (setItem.getType() == Material.ELYTRA) {
                         e.setCancelled(true);
                     } else if (setItem.getType().isAir()) {
-                        PlayerGlideListener.sendEquipmentPacket(player, new ItemStack(Material.ELYTRA), Collections.singletonList(player)); //TODO SET_SLOT
+                        PacketUtil.sendEquipmentPacket(player, new ItemStack(Material.ELYTRA), Collections.singletonList(player)); //TODO SET_SLOT
                         e.setCancelled(true);
                     }
                 }

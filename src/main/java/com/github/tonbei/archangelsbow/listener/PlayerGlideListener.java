@@ -1,11 +1,7 @@
 package com.github.tonbei.archangelsbow.listener;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.EnumWrappers;
-import com.comphenix.protocol.wrappers.Pair;
 import com.github.tonbei.archangelsbow.ArchangelsBow;
+import com.github.tonbei.archangelsbow.util.PacketUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,11 +12,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class PlayerGlideListener implements Listener {
 
@@ -39,7 +30,7 @@ public class PlayerGlideListener implements Listener {
             if (!player.hasMetadata(AB_GLIDE_META_KEY)) {
                 ItemStack chestplate = player.getInventory().getChestplate();
                 if (chestplate == null || chestplate.getType() != Material.ELYTRA) {
-                    sendEquipmentPacket(player, new ItemStack(Material.ELYTRA), player.getWorld().getPlayers());
+                    PacketUtil.sendEquipmentPacket(player, new ItemStack(Material.ELYTRA), player.getWorld().getPlayers());
                     player.setMetadata(AB_GLIDE_META_KEY, new FixedMetadataValue(ArchangelsBow.getInstance(), false));
                 }
             }
@@ -51,7 +42,7 @@ public class PlayerGlideListener implements Listener {
 
         if (cancelGlideFlag) {
             player.removeMetadata(AB_GLIDE_META_KEY, ArchangelsBow.getInstance());
-            sendEquipmentPacket(player, player.getInventory().getArmorContents()[2], player.getWorld().getPlayers());
+            PacketUtil.sendEquipmentPacket(player, player.getInventory().getArmorContents()[2], player.getWorld().getPlayers());
         }
     }
 
@@ -66,23 +57,6 @@ public class PlayerGlideListener implements Listener {
                 player.setGliding(true);
             }
             e.setCancelled(true);
-        }
-    }
-
-    public static void sendEquipmentPacket(Player target, ItemStack equipment, Collection<Player> receivers) {
-        PacketContainer packet = ProtocolLibrary.getProtocolManager().createPacket(PacketType.Play.Server.ENTITY_EQUIPMENT);
-        packet.getIntegers().write(0, target.getEntityId());
-
-        List<Pair<EnumWrappers.ItemSlot, ItemStack>> equipmentList = new ArrayList<>();
-        equipmentList.add(new Pair<>(EnumWrappers.ItemSlot.CHEST, equipment));
-        packet.getSlotStackPairLists().write(0, equipmentList);
-
-        for (Player receiver : receivers) {
-            try {
-                ProtocolLibrary.getProtocolManager().sendServerPacket(receiver, packet);
-            } catch (InvocationTargetException ex) {
-                ex.printStackTrace();
-            }
         }
     }
 }
