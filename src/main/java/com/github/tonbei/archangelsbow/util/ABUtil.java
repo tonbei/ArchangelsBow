@@ -69,6 +69,29 @@ public class ABUtil {
     }
 
     @NotNull
+    public static ItemStack getPacketElytra() {
+        ItemStack elytra = new ItemStack(Material.ELYTRA);
+        ItemMeta meta = elytra.getItemMeta();
+        meta.setDisplayName("Archangel's Elytra");
+        meta.setUnbreakable(true);
+        meta.addEnchant(Enchantment.BINDING_CURSE, 1, true);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        elytra.setItemMeta(meta);
+        return elytra;
+    }
+
+    public static boolean isPacketElytra(@Nullable ItemStack item) {
+        return item != null
+                && item.getType() == Material.ELYTRA
+                && item.hasItemMeta()
+                && item.getItemMeta().hasDisplayName()
+                && item.getItemMeta().getDisplayName().equals("Archangel's Elytra")
+                && item.getItemMeta().isUnbreakable()
+                && item.getEnchantmentLevel(Enchantment.BINDING_CURSE) == 1
+                && item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ENCHANTS);
+    }
+
+    @NotNull
     public static ItemStack getEnchantedBook(@NotNull Enchantment enchantment, int level, boolean ignoreLevelRestriction) {
         ItemStack enchantBook = new ItemStack(Material.ENCHANTED_BOOK);
         EnchantmentStorageMeta meta = (EnchantmentStorageMeta) enchantBook.getItemMeta();

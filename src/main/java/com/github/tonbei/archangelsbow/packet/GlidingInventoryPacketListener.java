@@ -5,13 +5,11 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.BukkitConverters;
-import com.comphenix.protocol.wrappers.Converters;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.Pair;
-import com.destroystokyo.paper.MaterialTags;
 import com.github.tonbei.archangelsbow.ArchangelsBow;
 import com.github.tonbei.archangelsbow.listener.PlayerGlideListener;
+import com.github.tonbei.archangelsbow.util.ABUtil;
 import com.github.tonbei.archangelsbow.util.PacketUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -20,13 +18,12 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class GlidingInventoryPacketListener extends PacketAdapter {
 
     public GlidingInventoryPacketListener(ArchangelsBow plugin) {
         super(plugin, ListenerPriority.NORMAL,
-                PacketType.Play.Client.WINDOW_CLICK, PacketType.Play.Client.SET_CREATIVE_SLOT,
+                PacketType.Play.Client.SET_CREATIVE_SLOT,
                 PacketType.Play.Server.WINDOW_ITEMS, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.ENTITY_EQUIPMENT);
     }
 
@@ -38,32 +35,14 @@ public class GlidingInventoryPacketListener extends PacketAdapter {
 
         if (!player.hasMetadata(PlayerGlideListener.AB_GLIDE_META_KEY)) return;
 
-        if (packetType == PacketType.Play.Client.WINDOW_CLICK) { //TODO InventoryClickEvent
-            if (packet.getIntegers().read(0) == 0) { //Window ID : 0 = player inventory
-                if (packet.getIntegers().read(2) == 6) { //Clicked Slot Number : 6 = Chestplate Slot
-                    //Map of slots to be changed : <Slot Number, ItemStack after change>
-                    Map<Integer, ItemStack> changeSlots = packet.getMaps(Converters.passthrough(Integer.TYPE), BukkitConverters.getItemStackConverter()).read(0);
-                    ItemStack chestplateItem = changeSlots.get(6);
-                    if (chestplateItem != null && (chestplateItem.getType().isAir() || MaterialTags.CHEST_EQUIPPABLE.isTagged(chestplateItem))) {
-                        //player.sendMessage(packet.getModifier().getFields().toString());
-
-                        //Inventory operation mode
-                        InventoryClickType clickType = packet.getEnumModifier(InventoryClickType.class, 4).read(0);
-
-                        if (clickType == InventoryClickType.SWAP || clickType == InventoryClickType.THROW || clickType == InventoryClickType.QUICK_MOVE) {
-                            PacketUtil.sendEquipmentPacket(player, new ItemStack(Material.ELYTRA), Collections.singletonList(player)); //TODO SET_SLOT
-                        }
-                    }
-                }
-            }
-        } else if (packetType == PacketType.Play.Client.SET_CREATIVE_SLOT) { //TODO InventoryCreativeEvent
+        if (packetType == PacketType.Play.Client.SET_CREATIVE_SLOT) { //TODO InventoryCreativeEvent
             if (packet.getIntegers().read(0) == 6) { //Clicked Slot Number : 6 = Chestplate Slot
                 ItemStack setItem = packet.getItemModifier().read(0); //Clicked Item
                 if (setItem != null) {
-                    if (setItem.getType() == Material.ELYTRA) {
+                    if (ABUtil.isPacketElytra(setItem)) {
                         e.setCancelled(true);
                     } else if (setItem.getType().isAir()) {
-                        PacketUtil.sendEquipmentPacket(player, new ItemStack(Material.ELYTRA), Collections.singletonList(player)); //TODO SET_SLOT
+                        PacketUtil.sendEquipmentPacket(player, ABUtil.getPacketElytra(), Collections.singletonList(player)); //TODO SET_SLOT
                         e.setCancelled(true);
                     }
                 }
@@ -84,8 +63,8 @@ public class GlidingInventoryPacketListener extends PacketAdapter {
                 int index = 0;
                 for (Pair<EnumWrappers.ItemSlot, ItemStack> pair : equipmentList) {
                     if (pair.getFirst() == EnumWrappers.ItemSlot.CHEST) {
-                        if (pair.getSecond().getType() != Material.ELYTRA) {
-                            equipmentList.set(index, new Pair<>(EnumWrappers.ItemSlot.CHEST, new ItemStack(Material.ELYTRA)));
+                        if (!ABUtil.isPacketElytra(pair.getSecond())) {
+                            equipmentList.set(index, new Pair<>(EnumWrappers.ItemSlot.CHEST, ABUtil.getPacketElytra()));
                             packet.getSlotStackPairLists().write(0, equipmentList);
                         }
                         break;
@@ -97,20 +76,16 @@ public class GlidingInventoryPacketListener extends PacketAdapter {
             if (packetType == PacketType.Play.Server.WINDOW_ITEMS) {
                 List<ItemStack> slotData = packet.getItemListModifier().read(0);
                 ItemStack chestplateSlot = slotData.get(6);
-                if (chestplateSlot != null && chestplateSlot.getType() != Material.ELYTRA) {
-                    slotData.set(6, new ItemStack(Material.ELYTRA));
+                if (!ABUtil.isPacketElytra(chestplateSlot)) {
+                    slotData.set(6, ABUtil.getPacketElytra());
                     packet.getItemListModifier().write(0, slotData);
                 }
             } else if (packetType == PacketType.Play.Server.SET_SLOT) {
                 ItemStack setItem = packet.getItemModifier().read(0);
-                if (packet.getIntegers().read(2) == 6 && (setItem == null || setItem.getType() != Material.ELYTRA)) {
-                    packet.getItemModifier().write(0, new ItemStack(Material.ELYTRA));
+                if (packet.getIntegers().read(2) == 6 && !ABUtil.isPacketElytra(setItem)) {
+                    packet.getItemModifier().write(0, ABUtil.getPacketElytra());
                 }
             }
         }
-    }
-
-    public enum InventoryClickType {
-        PICKUP, QUICK_MOVE, SWAP, CLONE, THROW, QUICK_CRAFT, PICKUP_ALL
     }
 }

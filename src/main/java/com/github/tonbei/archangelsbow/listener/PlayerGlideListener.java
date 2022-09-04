@@ -1,6 +1,7 @@
 package com.github.tonbei.archangelsbow.listener;
 
 import com.github.tonbei.archangelsbow.ArchangelsBow;
+import com.github.tonbei.archangelsbow.util.ABUtil;
 import com.github.tonbei.archangelsbow.util.PacketUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -26,11 +27,11 @@ public class PlayerGlideListener implements Listener {
             if (player.isOnGround() || player.isFlying() || player.isInWaterOrBubbleColumn() || player.isInLava()) {
                 cancelGlideFlag = true;
             }
-        } else if (player.getFallDistance() > 2.0f) {
+        } else if (player.getFallDistance() > 1.5f) {
             if (!player.hasMetadata(AB_GLIDE_META_KEY)) {
                 ItemStack chestplate = player.getInventory().getChestplate();
                 if (chestplate == null || chestplate.getType() != Material.ELYTRA) {
-                    PacketUtil.sendEquipmentPacket(player, new ItemStack(Material.ELYTRA), player.getWorld().getPlayers());
+                    PacketUtil.sendEquipmentPacket(player, ABUtil.getPacketElytra(), player.getWorld().getPlayers());
                     player.setMetadata(AB_GLIDE_META_KEY, new FixedMetadataValue(ArchangelsBow.getInstance(), false));
                 }
             }
