@@ -71,6 +71,36 @@ public class ABRecipeManager {
                         .setIngredient('C', new RecipeChoice.ExactChoice(new ItemStack(Material.END_CRYSTAL, 16)))
                         .setIngredient('S', Material.NETHER_STAR);
                 break;
+            case 2:
+                recipe.shape("SSS", "HAH", "SSS")
+                        .setIngredient('S', new RecipeChoice.ExactChoice(new ItemStack(Material.NAUTILUS_SHELL, 8)))
+                        .setIngredient('H', new RecipeChoice.ExactChoice(new ItemStack(Material.HEART_OF_THE_SEA, 4)))
+                        .setIngredient('A', new RecipeChoice.ExactChoice(ABUtil.getArchangelsBow(1)));
+                break;
+            case 3:
+                recipe.shape("GNG", "NAN", "GNG")
+                        .setIngredient('G', Material.ENCHANTED_GOLDEN_APPLE)
+                        .setIngredient('N', Material.NETHERITE_BLOCK)
+                        .setIngredient('A', new RecipeChoice.ExactChoice(ABUtil.getArchangelsBow(2)));
+                break;
+            case 4:
+                recipe.shape("BNB", "SAS", "PEP")
+                        .setIngredient('B', new RecipeChoice.ExactChoice(new ItemStack(Material.DRAGON_BREATH, 32)))
+                        .setIngredient('N', new RecipeChoice.ExactChoice(new ItemStack(Material.NETHER_STAR, 2)))
+                        .setIngredient('S', new RecipeChoice.ExactChoice(new ItemStack(Material.SHULKER_SHELL, 32)))
+                        .setIngredient('A', new RecipeChoice.ExactChoice(ABUtil.getArchangelsBow(3)))
+                        .setIngredient('P', new RecipeChoice.ExactChoice(new ItemStack(Material.PHANTOM_MEMBRANE, 64)))
+                        .setIngredient('E', Material.ELYTRA);
+                break;
+            case 5:
+                recipe.shape("NTN", "SAS", "BUB")
+                        .setIngredient('N', new RecipeChoice.ExactChoice(new ItemStack(Material.NETHER_STAR, 32)))
+                        .setIngredient('T', Material.TRIDENT)
+                        .setIngredient('S', new RecipeChoice.ExactChoice(new ItemStack(Material.HEART_OF_THE_SEA, 32)))
+                        .setIngredient('A', new RecipeChoice.ExactChoice(ABUtil.getArchangelsBow(4)))
+                        .setIngredient('B', new RecipeChoice.ExactChoice(new ItemStack(Material.DRAGON_BREATH, 64)))
+                        .setIngredient('U', Material.TOTEM_OF_UNDYING);
+                break;
         }
         return recipe;
     }

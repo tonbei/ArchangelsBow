@@ -18,7 +18,7 @@ import java.util.Locale;
 
 public class ABUtil {
 
-    public static final int BOW_MAX_LEVEL = 1;
+    public static final int BOW_MAX_LEVEL = 5;
 
     private static final String AB_NAMESPACE = "ArchangelsBow".toLowerCase(Locale.ROOT);
 
