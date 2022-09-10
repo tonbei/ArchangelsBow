@@ -1,6 +1,5 @@
 package com.github.tonbei.archangelsbow.listener;
 
-import com.github.tonbei.archangelsbow.ArchangelsBow;
 import com.github.tonbei.archangelsbow.manager.ABRecipeManager;
 import com.github.tonbei.archangelsbow.manager.TickTaskManager;
 import org.bukkit.NamespacedKey;
@@ -14,12 +13,9 @@ import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ABCraftListener implements Listener {
 
@@ -39,15 +35,15 @@ public class ABCraftListener implements Listener {
         if (e.getRecipe() instanceof ShapedRecipe) {
             ShapedRecipe recipe = (ShapedRecipe) e.getRecipe();
             if (recipeKeys.stream().anyMatch(recipe.getKey()::equals)) {
-                List<List<ItemStack>> recipeMatrix = getRecipeMatrix(recipe);
+                ItemStack[][] recipeMatrix = getRecipeMatrix(recipe);
                 ItemStack[] matrix = inv.getMatrix();
                 boolean cancelFlag = false;
 
                 for (int index = 0; index < 9; index++) {
                     ItemStack item = matrix[index];
-                    List<ItemStack> itemList = recipeMatrix.get(index);
+                    ItemStack[] itemList = recipeMatrix[index];
 
-                    if (item == null) continue;
+                    if (item == null || item.getType().isAir()) continue;
 
                     for (ItemStack recipeItem : itemList) {
                         if (recipeItem == null) continue;
@@ -77,19 +73,16 @@ public class ABCraftListener implements Listener {
         if (e.getRecipe() instanceof ShapedRecipe) {
             ShapedRecipe recipe = (ShapedRecipe) e.getRecipe();
             if (recipeKeys.stream().anyMatch(recipe.getKey()::equals)) {
-                List<List<ItemStack>> recipeMatrix = getRecipeMatrix(recipe);
+                ItemStack[][] recipeMatrix = getRecipeMatrix(recipe);
                 ItemStack[] matrix = inv.getMatrix();
                 ItemStack[] afterMatrix = new ItemStack[9];
                 boolean cancelFlag = false;
 
                 for (int index = 0; index < 9; index++) {
                     ItemStack item = matrix[index];
-                    List<ItemStack> itemList = recipeMatrix.get(index);
+                    ItemStack[] itemList = recipeMatrix[index];
 
-                    if (item == null) {
-                        afterMatrix[index] = null;
-                        continue;
-                    }
+                    if (item == null || item.getType().isAir()) continue;
 
                     for (ItemStack recipeItem : itemList) {
                         if (recipeItem == null) continue;
@@ -98,9 +91,7 @@ public class ABCraftListener implements Listener {
                             int amount = item.getAmount() - recipeItem.getAmount();
                             if (amount < 0) {
                                 cancelFlag = true;
-                            } else if (amount == 0) {
-                                afterMatrix[index] = null;
-                            } else {
+                            } else if (amount > 0) {
                                 ItemStack afterItem = item.clone();
                                 afterItem.setAmount(amount);
                                 afterMatrix[index] = afterItem;
@@ -114,6 +105,7 @@ public class ABCraftListener implements Listener {
 
                 if (cancelFlag) {
                     inv.setResult(null);
+                    e.setCancelled(true);
                 } else {
                     inv.setMatrix(new ItemStack[9]);
                     TickTaskManager.register(() -> inv.setMatrix(afterMatrix));
@@ -129,27 +121,22 @@ public class ABCraftListener implements Listener {
             e.setCancelled(true);
     }
 
-    private List<List<ItemStack>> getRecipeMatrix(ShapedRecipe recipe) {
-        List<List<ItemStack>> matrix = new ArrayList<>(9);
+    private ItemStack[][] getRecipeMatrix(ShapedRecipe recipe) {
+        ItemStack[][] matrix = new ItemStack[9][];
         Map<Character, RecipeChoice> recipeChoices = recipe.getChoiceMap();
+        int index = 0;
         for (String row : recipe.getShape()) {
             for (Character c : row.toCharArray()) {
                 RecipeChoice choice = recipeChoices.get(c);
                 if (choice instanceof RecipeChoice.MaterialChoice)
-                    matrix.add(((RecipeChoice.MaterialChoice) choice).getChoices().stream().map(ItemStack::new).collect(Collectors.toList()));
+                    matrix[index] = ((RecipeChoice.MaterialChoice) choice).getChoices().stream().map(ItemStack::new).toArray(ItemStack[]::new);
                 else if (choice instanceof RecipeChoice.ExactChoice)
-                    matrix.add(((RecipeChoice.ExactChoice) choice).getChoices());
-                else
-                    matrix.add(null);
+                    matrix[index] = ((RecipeChoice.ExactChoice) choice).getChoices().toArray(new ItemStack[0]);
+
+                index++;
             }
-
-            for (int i = 0; i < 3 - row.toCharArray().length; i++)
-                matrix.add(null);
+            if (index % 3 != 0) index += 3 - (index % 3);
         }
-
-        for (int i = 0; i < 3 - recipe.getShape().length; i++)
-            for (int j = 0; j < 3; j++)
-                matrix.add(null);
 
         return matrix;
     }
