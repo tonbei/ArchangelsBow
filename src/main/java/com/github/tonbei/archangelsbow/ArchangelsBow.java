@@ -4,6 +4,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.github.tonbei.archangelsbow.config.ABConfig;
 import com.github.tonbei.archangelsbow.arrow.HomingArrow;
 import com.github.tonbei.archangelsbow.listener.ABCraftListener;
+import com.github.tonbei.archangelsbow.listener.ABDamageListener;
 import com.github.tonbei.archangelsbow.listener.ABInventoryListener;
 import com.github.tonbei.archangelsbow.listener.HitTickArrowListener;
 import com.github.tonbei.archangelsbow.listener.PlayerFlyListener;
@@ -64,6 +65,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new PlayerGlideListener(), this);
         pluginManager.registerEvents(new PlayerFlyListener(), this);
         pluginManager.registerEvents(new ServerTickEndListener(), this);
+        pluginManager.registerEvents(new ABDamageListener(), this);
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new GlidingInventoryPacketListener(this));
         ProtocolLibrary.getProtocolManager().addPacketListener(new PlayerFlyPacketListener(this));

@@ -62,6 +62,10 @@ public class ABUtil {
                 && item.getItemMeta().getPersistentDataContainer().has(BLESSING, PersistentDataType.INTEGER);
     }
 
+    public static int getABLevel(@Nullable ItemStack item) {
+        return isArchangelsBow(item) ? item.getItemMeta().getPersistentDataContainer().get(BLESSING, PersistentDataType.INTEGER) : 0;
+    }
+
     public static boolean isHomingArrow(@Nullable Entity entity) {
         return entity instanceof Arrow
                 && !entity.isDead()

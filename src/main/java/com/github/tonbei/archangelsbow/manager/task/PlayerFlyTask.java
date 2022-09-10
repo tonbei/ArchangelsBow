@@ -16,7 +16,7 @@ public class PlayerFlyTask implements Runnable {
 
         if (!updatePlayers.isEmpty()) {
             for (Player player : updatePlayers) {
-                if (Arrays.stream(player.getInventory().getContents()).anyMatch(ABUtil::isArchangelsBow)) {
+                if (Arrays.stream(player.getInventory().getContents()).anyMatch(item -> ABUtil.getABLevel(item) >= 5)) {
                     if (!player.getAllowFlight()) {
                         player.setAllowFlight(true);
                     }

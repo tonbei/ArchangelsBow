@@ -14,6 +14,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
+import java.util.Arrays;
+
 public class PlayerGlideListener implements Listener {
 
     public static final String AB_GLIDE_META_KEY = "ArchangelsBow:Glide";
@@ -22,12 +24,13 @@ public class PlayerGlideListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent e) {
         Player player = e.getPlayer();
         boolean cancelGlideFlag = false;
+        int abLevel = Arrays.stream(player.getInventory().getContents()).mapToInt(ABUtil::getABLevel).max().orElse(0);
 
-        if (player.getMetadata(AB_GLIDE_META_KEY).stream().anyMatch(MetadataValue::asBoolean)) {
+        if (abLevel >= 4 && player.getMetadata(AB_GLIDE_META_KEY).stream().anyMatch(MetadataValue::asBoolean)) {
             if (player.isOnGround() || player.isFlying() || player.isInWaterOrBubbleColumn() || player.isInLava()) {
                 cancelGlideFlag = true;
             }
-        } else if (player.getFallDistance() > 1.5f) {
+        } else if (abLevel >= 4 && player.getFallDistance() > 1.5f) {
             if (!player.hasMetadata(AB_GLIDE_META_KEY)) {
                 ItemStack chestplate = player.getInventory().getChestplate();
                 if (chestplate == null || chestplate.getType() != Material.ELYTRA) {

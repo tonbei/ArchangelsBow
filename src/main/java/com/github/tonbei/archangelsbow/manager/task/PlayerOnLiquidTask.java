@@ -25,20 +25,24 @@ public class PlayerOnLiquidTask extends BukkitRunnable {
 
     private static final String AB_FLY_META_KEY = "ArchangelsBow:Fly";
     private static final AttributeModifier FLUID_SPEED_BOOST = new AttributeModifier(UUID.fromString("e29dde3a-3aab-a9f8-7f6a-5bbb7b4c4d25"), "Walk on water/lava speed boost", 0.075, AttributeModifier.Operation.ADD_NUMBER);
-    private static final List<Material> liquidBlocks = Arrays.asList(Material.WATER, Material.LAVA, Material.BUBBLE_COLUMN, Material.KELP, Material.KELP_PLANT, Material.SEAGRASS, Material.TALL_SEAGRASS);
+    private static final List<Material> liquidBlocks = Arrays.asList(Material.WATER, Material.BUBBLE_COLUMN, Material.KELP, Material.KELP_PLANT, Material.SEAGRASS, Material.TALL_SEAGRASS);
 
     @Override
     public void run() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             boolean applySpeed = false;
             boolean setFlyFlag = false;
+            int abLevel = Arrays.stream(player.getInventory().getContents()).mapToInt(ABUtil::getABLevel).max().orElse(0);
 
-            if (player.getGameMode() != GameMode.SPECTATOR && Arrays.stream(player.getInventory().getContents()).anyMatch(ABUtil::isArchangelsBow)) {
+            if (player.getGameMode() != GameMode.SPECTATOR && abLevel >= 2) {
                 Location location = player.getLocation().toBlockLocation();
                 Block block = location.getBlock();
                 Block below = player.getLocation().add(0.0, -0.35, 0.0).toBlockLocation().getBlock();
                 if (player.hasMetadata(AB_FLY_META_KEY) || !player.isFlying()) {
-                    if (block.getType().isAir() && (liquidBlocks.stream().anyMatch(below.getType()::equals) || (below.getBlockData() instanceof Waterlogged && ((Waterlogged) below.getBlockData()).isWaterlogged()))) { //TODO Check　BlockData(Slab, Stairs)
+                    if (block.getType().isAir()
+                            && (liquidBlocks.stream().anyMatch(below.getType()::equals)
+                            || (below.getBlockData() instanceof Waterlogged && ((Waterlogged) below.getBlockData()).isWaterlogged()) //TODO Check　BlockData(Slab, Stairs)
+                            || (abLevel >= 3 && below.getType() == Material.LAVA))) {
                         if (!player.isSneaking()) {
                             if (player.getVelocity().getY() != 0) {
                                 player.setVelocity(player.getVelocity().multiply(new Vector(1, 0, 1)));
@@ -53,6 +57,10 @@ public class PlayerOnLiquidTask extends BukkitRunnable {
 
                 if (player.isInWater()) {
                     player.setRemainingAir(player.getMaximumAir());
+                }
+
+                if (abLevel >= 3) {
+                    player.setFireTicks(0);
                 }
             }
 
