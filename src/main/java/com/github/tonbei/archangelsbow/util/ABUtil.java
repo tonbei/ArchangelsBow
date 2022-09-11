@@ -1,5 +1,6 @@
 package com.github.tonbei.archangelsbow.util;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
@@ -14,6 +15,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.Locale;
 
 public class ABUtil {
@@ -45,7 +47,9 @@ public class ABUtil {
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         level = Math.max(1, Math.min(level, BOW_MAX_LEVEL));
         meta.getPersistentDataContainer().set(BLESSING, PersistentDataType.INTEGER, level);
+        meta.setLore(Collections.singletonList(ChatColor.GRAY + "Blessing " + RomanNumeral.getRomanNumeral(level)));
         ((CrossbowMeta) meta).addChargedProjectile(new ItemStack(Material.ARROW));
+        meta.addItemFlags(ItemFlag.HIDE_POTION_EFFECTS);
         bow.setItemMeta(meta);
         return bow;
     }
@@ -59,6 +63,7 @@ public class ABUtil {
                 && item.getItemMeta().isUnbreakable()
                 && item.getEnchantmentLevel(Enchantment.BINDING_CURSE) == 1
                 && item.getItemMeta().hasItemFlag(ItemFlag.HIDE_ENCHANTS)
+                && item.getItemMeta().hasItemFlag(ItemFlag.HIDE_POTION_EFFECTS)
                 && item.getItemMeta().getPersistentDataContainer().has(BLESSING, PersistentDataType.INTEGER);
     }
 
@@ -102,5 +107,13 @@ public class ABUtil {
         meta.addStoredEnchant(enchantment, level, ignoreLevelRestriction);
         enchantBook.setItemMeta(meta);
         return enchantBook;
+    }
+
+    private enum RomanNumeral {
+        I, II, III, IV, V, VI, VII, VIII, IX, X;
+
+        public static String getRomanNumeral(int num) {
+            return values()[Math.max(0, Math.min(9, num - 1))].name();
+        }
     }
 }
