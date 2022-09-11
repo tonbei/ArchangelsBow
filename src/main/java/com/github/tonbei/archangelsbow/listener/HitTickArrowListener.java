@@ -3,8 +3,8 @@ package com.github.tonbei.archangelsbow.listener;
 import com.destroystokyo.paper.event.entity.EndermanEscapeEvent;
 import com.destroystokyo.paper.event.entity.ProjectileCollideEvent;
 import com.github.tonbei.archangelsbow.ArchangelsBow;
+import com.github.tonbei.archangelsbow.manager.InventoryUpdateManager;
 import com.github.tonbei.archangelsbow.manager.TickArrowManager;
-import com.github.tonbei.archangelsbow.util.ABUtil;
 import com.github.tonbei.archangelsbow.util.Log;
 import org.bukkit.entity.Enderman;
 import org.bukkit.entity.Entity;
@@ -22,8 +22,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.entity.EntityTargetLivingEntityEvent;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 
-import java.util.Arrays;
 import java.util.Random;
 
 public class HitTickArrowListener implements Listener {
@@ -90,7 +90,7 @@ public class HitTickArrowListener implements Listener {
             }
             if (entity instanceof PigZombie) {
                 Player player = (Player) e.getTarget();
-                if (Arrays.stream(player.getInventory().getContents()).anyMatch(ABUtil::isArchangelsBow)) {
+                if (player.getMetadata(InventoryUpdateManager.AB_LEVEL_META_KEY).stream().findFirst().map(MetadataValue::asInt).orElse(0) >= 1) {
                     e.setCancelled(true);
                 }
             }

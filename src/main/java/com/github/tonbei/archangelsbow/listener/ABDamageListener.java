@@ -1,13 +1,12 @@
 package com.github.tonbei.archangelsbow.listener;
 
-import com.github.tonbei.archangelsbow.util.ABUtil;
+import com.github.tonbei.archangelsbow.manager.InventoryUpdateManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-
-import java.util.Arrays;
+import org.bukkit.metadata.MetadataValue;
 
 public class ABDamageListener implements Listener {
 
@@ -17,7 +16,7 @@ public class ABDamageListener implements Listener {
         Player player = (Player) e.getEntity();
 
         if (e.getCause() == EntityDamageEvent.DamageCause.LAVA || e.getCause() == EntityDamageEvent.DamageCause.FIRE || e.getCause() == EntityDamageEvent.DamageCause.FIRE_TICK) {
-            if (Arrays.stream(player.getInventory().getContents()).anyMatch(item -> ABUtil.getABLevel(item) >= 3)) {
+            if (player.getMetadata(InventoryUpdateManager.AB_LEVEL_META_KEY).stream().findFirst().map(MetadataValue::asInt).orElse(0) >= 3) {
                 e.setCancelled(true);
             }
         }

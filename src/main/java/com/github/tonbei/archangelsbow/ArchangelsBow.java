@@ -7,17 +7,17 @@ import com.github.tonbei.archangelsbow.listener.ABCraftListener;
 import com.github.tonbei.archangelsbow.listener.ABDamageListener;
 import com.github.tonbei.archangelsbow.listener.ABInventoryListener;
 import com.github.tonbei.archangelsbow.listener.HitTickArrowListener;
-import com.github.tonbei.archangelsbow.listener.PlayerFlyListener;
+import com.github.tonbei.archangelsbow.listener.InventoryUpdateListener;
 import com.github.tonbei.archangelsbow.listener.PlayerGlideListener;
 import com.github.tonbei.archangelsbow.listener.ServerTickEndListener;
 import com.github.tonbei.archangelsbow.listener.ShootArrowListener;
 import com.github.tonbei.archangelsbow.listener.TickArrowLoadListener;
 import com.github.tonbei.archangelsbow.manager.ABRecipeManager;
-import com.github.tonbei.archangelsbow.manager.PlayerFlyManager;
+import com.github.tonbei.archangelsbow.manager.InventoryUpdateManager;
 import com.github.tonbei.archangelsbow.manager.TickArrowManager;
 import com.github.tonbei.archangelsbow.manager.TickTaskManager;
 import com.github.tonbei.archangelsbow.packet.GlidingInventoryPacketListener;
-import com.github.tonbei.archangelsbow.packet.PlayerFlyPacketListener;
+import com.github.tonbei.archangelsbow.packet.InventoryUpdatePacketListener;
 import com.github.tonbei.archangelsbow.util.ABUtil;
 import com.github.tonbei.archangelsbow.util.Log;
 import org.bukkit.Bukkit;
@@ -63,12 +63,12 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         pluginManager.registerEvents(new HitTickArrowListener(), this);
         pluginManager.registerEvents(new ABCraftListener(recipeManager), this);
         pluginManager.registerEvents(new PlayerGlideListener(), this);
-        pluginManager.registerEvents(new PlayerFlyListener(), this);
+        pluginManager.registerEvents(new InventoryUpdateListener(), this);
         pluginManager.registerEvents(new ServerTickEndListener(), this);
         pluginManager.registerEvents(new ABDamageListener(), this);
 
         ProtocolLibrary.getProtocolManager().addPacketListener(new GlidingInventoryPacketListener(this));
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PlayerFlyPacketListener(this));
+        ProtocolLibrary.getProtocolManager().addPacketListener(new InventoryUpdatePacketListener(this));
 
         TickTaskManager.init(this);
 
@@ -85,7 +85,7 @@ public final class ArchangelsBow extends JavaPlugin implements Listener {
         recipeManager.removeRecipe(false);
         TickArrowManager.clear();
         TickTaskManager.clear();
-        PlayerFlyManager.clear();
+        InventoryUpdateManager.clear();
     }
 
     @Override

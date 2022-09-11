@@ -1,8 +1,7 @@
 package com.github.tonbei.archangelsbow.manager.task;
 
 import com.github.tonbei.archangelsbow.ArchangelsBow;
-import com.github.tonbei.archangelsbow.manager.PlayerFlyManager;
-import com.github.tonbei.archangelsbow.util.ABUtil;
+import com.github.tonbei.archangelsbow.manager.InventoryUpdateManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -14,6 +13,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.metadata.MetadataValue;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -32,7 +32,7 @@ public class PlayerOnLiquidTask extends BukkitRunnable {
         for (Player player : Bukkit.getOnlinePlayers()) {
             boolean applySpeed = false;
             boolean setFlyFlag = false;
-            int abLevel = Arrays.stream(player.getInventory().getContents()).mapToInt(ABUtil::getABLevel).max().orElse(0);
+            int abLevel = player.getMetadata(InventoryUpdateManager.AB_LEVEL_META_KEY).stream().findFirst().map(MetadataValue::asInt).orElse(0);
 
             if (player.getGameMode() != GameMode.SPECTATOR && abLevel >= 2) {
                 Location location = player.getLocation().toBlockLocation();
@@ -87,7 +87,7 @@ public class PlayerOnLiquidTask extends BukkitRunnable {
                     player.setFlying(false);
                     if (player.getGameMode() == GameMode.SURVIVAL || player.getGameMode() == GameMode.ADVENTURE) {
                         player.setAllowFlight(false);
-                        PlayerFlyManager.add(player);
+                        InventoryUpdateManager.add(player);
                     }
                 }
             }

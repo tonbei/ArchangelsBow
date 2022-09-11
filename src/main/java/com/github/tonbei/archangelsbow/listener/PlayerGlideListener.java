@@ -1,6 +1,7 @@
 package com.github.tonbei.archangelsbow.listener;
 
 import com.github.tonbei.archangelsbow.ArchangelsBow;
+import com.github.tonbei.archangelsbow.manager.InventoryUpdateManager;
 import com.github.tonbei.archangelsbow.util.ABUtil;
 import com.github.tonbei.archangelsbow.util.ExpUtil;
 import com.github.tonbei.archangelsbow.util.PacketUtil;
@@ -17,8 +18,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
 
-import java.util.Arrays;
-
 public class PlayerGlideListener implements Listener {
 
     public static final String AB_GLIDE_META_KEY = "ArchangelsBow:Glide";
@@ -27,7 +26,7 @@ public class PlayerGlideListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent e) {
         Player player = e.getPlayer();
         boolean cancelGlideFlag = false;
-        int abLevel = Arrays.stream(player.getInventory().getContents()).mapToInt(ABUtil::getABLevel).max().orElse(0);
+        int abLevel = player.getMetadata(InventoryUpdateManager.AB_LEVEL_META_KEY).stream().findFirst().map(MetadataValue::asInt).orElse(0);
 
         if (abLevel >= 4 && player.getMetadata(AB_GLIDE_META_KEY).stream().anyMatch(MetadataValue::asBoolean)) {
             if (player.isOnGround() || player.isFlying() || player.isInWaterOrBubbleColumn() || player.isInLava()) {

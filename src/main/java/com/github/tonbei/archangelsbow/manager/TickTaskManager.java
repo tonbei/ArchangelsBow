@@ -1,7 +1,7 @@
 package com.github.tonbei.archangelsbow.manager;
 
 import com.github.tonbei.archangelsbow.ArchangelsBow;
-import com.github.tonbei.archangelsbow.manager.task.PlayerFlyTask;
+import com.github.tonbei.archangelsbow.manager.task.InventoryUpdateTask;
 import com.github.tonbei.archangelsbow.manager.task.PlayerOnLiquidTask;
 import com.github.tonbei.archangelsbow.manager.task.TickArrowTask;
 import org.apache.commons.lang.Validate;
@@ -21,7 +21,7 @@ public class TickTaskManager {
         clear();
 
         tasks.add(new TickArrowTask());
-        tasks.add(new PlayerFlyTask());
+        tasks.add(new InventoryUpdateTask());
 
         playerOnLiquidTask = new PlayerOnLiquidTask();
         playerOnLiquidTask.runTaskTimer(plugin, 0L, 1L);

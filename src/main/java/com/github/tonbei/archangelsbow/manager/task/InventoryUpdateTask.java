@@ -1,22 +1,27 @@
 package com.github.tonbei.archangelsbow.manager.task;
 
-import com.github.tonbei.archangelsbow.manager.PlayerFlyManager;
+import com.github.tonbei.archangelsbow.ArchangelsBow;
+import com.github.tonbei.archangelsbow.manager.InventoryUpdateManager;
 import com.github.tonbei.archangelsbow.util.ABUtil;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Arrays;
 import java.util.Set;
 
-public class PlayerFlyTask implements Runnable {
+public class InventoryUpdateTask implements Runnable {
 
     @Override
     public void run() {
-        Set<Player> updatePlayers = PlayerFlyManager.getUpdatePlayers();
+        Set<Player> updatePlayers = InventoryUpdateManager.getUpdatePlayers();
 
         if (!updatePlayers.isEmpty()) {
             for (Player player : updatePlayers) {
-                if (Arrays.stream(player.getInventory().getContents()).anyMatch(item -> ABUtil.getABLevel(item) >= 5)) {
+                int abLevel = Arrays.stream(player.getInventory().getContents()).mapToInt(ABUtil::getABLevel).max().orElse(0);
+                player.setMetadata(InventoryUpdateManager.AB_LEVEL_META_KEY, new FixedMetadataValue(ArchangelsBow.getInstance(), abLevel));
+
+                if (abLevel >= 5) {
                     if (!player.getAllowFlight()) {
                         player.setAllowFlight(true);
                     }
@@ -29,7 +34,7 @@ public class PlayerFlyTask implements Runnable {
                 }
             }
 
-            PlayerFlyManager.clear();
+            InventoryUpdateManager.clear();
         }
     }
 }
