@@ -2,7 +2,9 @@ package com.github.tonbei.archangelsbow.listener;
 
 import com.github.tonbei.archangelsbow.ArchangelsBow;
 import com.github.tonbei.archangelsbow.util.ABUtil;
+import com.github.tonbei.archangelsbow.util.ExpUtil;
 import com.github.tonbei.archangelsbow.util.PacketUtil;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -10,6 +12,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.metadata.MetadataValue;
@@ -61,6 +64,20 @@ public class PlayerGlideListener implements Listener {
                 player.setGliding(true);
             }
             e.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+    public void onToggleSneak(PlayerToggleSneakEvent e) {
+        Player player = e.getPlayer();
+
+        if (e.isSneaking() && player.getMetadata(AB_GLIDE_META_KEY).stream().anyMatch(MetadataValue::asBoolean)) {
+            if (player.getGameMode() != GameMode.CREATIVE) {
+                int exp = ExpUtil.getExp(player);
+                if (exp < 16) return;
+                ExpUtil.setExp(player, exp - 16);
+            }
+            player.boostElytra(new ItemStack(Material.FIREWORK_ROCKET));
         }
     }
 }
