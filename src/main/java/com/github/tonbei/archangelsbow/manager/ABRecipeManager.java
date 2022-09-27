@@ -72,14 +72,14 @@ public class ABRecipeManager {
                 break;
             case 2:
                 recipe.shape("SSS", "HAH", "SSS")
-                        .setIngredient('S', new ItemStack(Material.NAUTILUS_SHELL, 8))
-                        .setIngredient('H', new ItemStack(Material.HEART_OF_THE_SEA, 4))
+                        .setIngredient('S', new ItemStack(Material.NAUTILUS_SHELL, 4))
+                        .setIngredient('H', new ItemStack(Material.HEART_OF_THE_SEA, 2))
                         .setIngredient('A', ABUtil.getArchangelsBow(1));
                 break;
             case 3:
                 recipe.shape("GNG", "NAN", "GNG")
                         .setIngredient('G', Material.ENCHANTED_GOLDEN_APPLE)
-                        .setIngredient('N', Material.NETHERITE_BLOCK)
+                        .setIngredient('N', Material.NETHERITE_INGOT)
                         .setIngredient('A', ABUtil.getArchangelsBow(2));
                 break;
             case 4:
@@ -93,9 +93,9 @@ public class ABRecipeManager {
                 break;
             case 5:
                 recipe.shape("NTN", "SAS", "BUB")
-                        .setIngredient('N', new ItemStack(Material.NETHER_STAR, 32))
+                        .setIngredient('N', new ItemStack(Material.NETHER_STAR, 8))
                         .setIngredient('T', Material.TRIDENT)
-                        .setIngredient('S', new ItemStack(Material.HEART_OF_THE_SEA, 32))
+                        .setIngredient('S', new ItemStack(Material.HEART_OF_THE_SEA, 8))
                         .setIngredient('A', ABUtil.getArchangelsBow(4))
                         .setIngredient('B', new ItemStack(Material.DRAGON_BREATH, 64))
                         .setIngredient('U', Material.TOTEM_OF_UNDYING);
