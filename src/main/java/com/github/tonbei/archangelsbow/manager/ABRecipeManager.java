@@ -79,7 +79,7 @@ public class ABRecipeManager {
             case 3:
                 recipe.shape("GNG", "NAN", "GNG")
                         .setIngredient('G', Material.ENCHANTED_GOLDEN_APPLE)
-                        .setIngredient('N', Material.NETHERITE_INGOT)
+                        .setIngredient('N', new ItemStack(Material.NETHERITE_INGOT, 2))
                         .setIngredient('A', ABUtil.getArchangelsBow(2));
                 break;
             case 4:
